@@ -1,0 +1,279 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+es:
+  activerecord:
+    errors:
+      messages:
+        exclusion: " es reservado"
+        invalid: " es invalido"
+        confirmation: " la confirmación no coincide"
+        accepted: " debe de ser aceptado"
+        empty: " no puede ser vacio"
+        blank: " no puede ser vacio"
+        too_long: " es demasiado largo (el máximo es {{count}} caracteres)"
+        too_short: " es muy corto (el mínimo es {{count}} caracteres)"
+        wrong_length: " tiene la longitud incorrecta (debe ser {{count}} caracteres)"
+        taken: " ya ha sido tomado"
+        not_a_number: " no es un número"
+        greater_than: " debe de ser mayor que {{count}}"
+        greater_than_or_equal_to: " debe de ser mayor que o igual que {{count}}"
+        equal_to: " debe de ser igual a {{count}}"
+        less_than: " debe de ser menor que {{count}}"
+        less_than_or_equal_to: " debe de ser menor que o igual que {{count}}"
+        odd: " debe de ser non"
+        even: " debe de ser par"
+        record_invalid: "La validación falló: {{errors}}"
+  number:
+    percentage:
+      format:
+        delimiter: ","
+    currency:
+      format:
+        format: "%u%n"
+        unit: "$"
+        separator: "."
+        delimiter: ","
+        precision: 2 
+        significant: false
+        strip_insignificant_zeros: false
+    format:
+      delimiter: ","
+      precision: 2
+      significant: false
+      strip_insignificant_zeros: false
+      separator: "."
+    human:
+      format:
+        delimiter: ","
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one:   "Byte"
+            other: "Bytes"
+          kb: "KB"
+          mb: "MB"
+          gb: "GB"
+          tb: "TB"
+      decimal_units:
+        format: "%n %u"
+        units:
+          unit: ""
+          thousand: "Mil"
+          million: "Millón"
+          billion: "Mil millones"
+          trillion: "Trillón"
+          quadrillion: "Cuatrillón"
+    precision:
+      format:
+        delimiter: ","
+
+  date:
+    formats:
+      default: "%d-%m-%Y"
+      short: "%b %e"
+      long: "%B %e, %Y"
+      month_day: "%e de %B"
+
+    day_names: [Domingo, Lunes, Martes, Miercoles, Jueves, Viernes, Sabado]
+    abbr_day_names: [Dom, Lun, Mar, Mie, Jue, Vie, Sab]
+    month_names: [~, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre]
+    abbr_month_names: [~, Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic]
+    order:
+      - :day
+      - :month
+      - :year
+  time:
+    formats:
+      default: "%a, %e %b %Y %H:%M:%S %z"
+      short: "%b %e, %l:%M %p"
+      long: "%B %e, %Y %l:%M %p"
+    am: "AM"
+    pm: "PM"
+
+    support:
+      array:
+        words_connector: ", "
+        two_words_connector: " y "
+        last_word_connector: ", y "
+
+  datetime:
+    distance_in_words:
+      half_a_minute: "medio minuto"
+      less_than_x_seconds:
+        one:   "menos de un segundo"
+        other: "menos de %{count} segundos"
+      x_seconds:
+        one:   "1 segundo"
+        other: "%{count} segundos"
+      less_than_x_minutes:
+        one:   "menos de un minuto"
+        other: "menos de %{count} minutos"
+      x_minutes:
+        one:   "1 minuto"
+        other: "%{count} minutos"
+      about_x_hours:
+        one:   "como una hora"
+        other: "como %{count} horas"
+      x_days:
+        one:   "1 día"
+        other: "%{count} días"
+      about_x_months:
+        one:   "como 1 mes"
+        other: "como %{count} meses"
+      x_months:
+        one:   "1 mes"
+        other: "%{count} meses"
+      about_x_years:
+        one:   "como 1 año"
+        other: "como %{count} años"
+      over_x_years:
+        one:   "mas de 1 año"
+        other: "mas de %{count} años"
+      almost_x_years:
+        one:   "casi 1 año"
+        other: "casi %{count} años"
+    prompts:
+      year:   "Año"
+      month:  "Mes"
+      day:    "Día"
+      hour:   "Hora"
+      minute: "Minuto"
+      second: "Segundos"
+
+  helpers:
+    select:
+      prompt: "Selecciona..."
+
+    submit:
+      create: 'Crear %{model}'
+      update: 'Actualizar %{model}'
+      submit: 'Guardar %{model}'
+
+  save: "Guardar"
+  save_wait: "Guardando..."
+  edit: "Editar"
+  delete: "Eliminar"
+  cancel: "Cancelar"
+  untitled: "Sin Título"
+
+  home_link: "Inicio"
+  share: "Compartir"
+  share_from: "De:"
+  share_to: "Para:"
+  share_to_the_community: "Quiero compartir con la comunidad..."
+  share_wait: "Publicando..."
+
+  posts: "Publicaciones"
+  post_created: "Publicación creada"
+  cant_create_post: "No se pudo crear la publicación"
+  new_posts_message: "%{count} nuevas publicaciones"
+
+  yesterday: "ayer"
+
+  type_or_paste_link: "Escribe o pega un enlace"
+  what_do_you_want_to_share: "¿Qué deseas compartir?"
+  write_here_your_message: "Escribe aquí tu mensaje"
+  
+  add_a_comment: "Escribir un comentario..."
+  post_comment: "Comentar"
+  posting_comment: "Publicando..."
+
+  image: "imagen"
+  photo: "foto"
+  of: "de"
+
+  event_title: "Titulo"
+  event_start_date: "Fecha y hora"
+  event_end_date: "Hora de finalización"
+  event_location: "Ubicación"
+  event_link: "Liga al evento"
+  upcoming_events: "Próximos Eventos"
+  no_events: "No hay próximos eventos en este momento"
+
+  upcoming_birthdays: "Próximos Cumpleaños"
+  
+  members: "Miembros"
+
+  pages: "Páginas"
+  page: "Página"
+  add_page: "Agregar página"
+  edit_this_page: "Editar esta página"
+  edit_title: "Editar título"
+  page_updated: "Página actualizada"
+  cant_update_page: "No se puede actualizar la página"
+
+  today: "Hoy"
+
+  message_share_message: "Mensaje"
+  link_share_message: "Enlace"
+  photo_share_message: "Fotos"
+  file_share_message: "Archivos"
+  event_share_message: "Evento"
+
+  only_visible_by: "Solo puede ser visto por:"
+  everyone: "Todos"
+  public: "Público"
+  published_by: "Publicado por "
+
+  attach_images: "Adjunta las imagenes arrastrandolas y soltandolas aqui o escogelas manualmente..."
+  attach_files: "Adjunta los archivos arrastrandolos y soltandolos aqui o escogelas manualmente..."
+
+  to_groups_hint_message: "Teclea un grupo"
+  to_groups_searching_message: "Buscando grupos..."
+  to_groups_no_results_message: "No se encontraron grupos"
+ 
+  email: 'Correo Electrónico'
+  work_phone: 'Tel. Oficina'
+  home_phone: 'Tel. Casa'
+  mobile_phone: 'Tel. Celular'
+  address: 'Dirección'
+  birth_date: 'Cumpleaños'
+  years_of_service: 'Antigüedad laboral'
+  reports_to: 'Reporta a'
+
+  years: 'años'
+  year: 'año'
+  months: 'meses'
+  month: 'mes'
+
+  badges: "Distintivos"
+  i_have_earned_new_badge: "He obtenido un nuevo distintivo"
+
+  logout: "Salir"
+
+  people: "Personas"
+  groups: "Grupos"
+  applications: "Aplicaciones"
+
+  sign_in_with_your_existing_account: "Iniciar sesión con tu cuenta existente"
+
+  web_address: "Dirección Web"
+  file: "Archivo"
+  select_page: "Selecciona una página"
+
+  insert: "Insertar"
+  select_a_file: "Selecciona un archivo"
+  size: "Tamaño"
+
+  no_posts_yet: "No hay publicaciones aún"
+  no_results_found: "No se encontraron resultados"
+
+  add_files: "Agregar archivos"
+  add_files_section: "Agregar sección de archivos"
+
+  deleted_post: "Publicación eliminada"
+
+  happy_birthday: "¡Feliz cumpleaños %{name}!"
+
+  like: "Me gusta"
+  unlike: "Ya no me gusta"
+  you_like_this: "A ti te gusta esto"
+  you_and_other_like_this: "A ti y a otra persona les gusta esto"
+  you_and_people_like_this: "A ti y a %{qty} personas les gusta esto"
+  people_like_this: "A %{qty} personas les gusta esto"
+  person_like_this: "A 1 persona le gusta esto"

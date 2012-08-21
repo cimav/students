@@ -1,0 +1,52 @@
+%h3= "Datos personales"
+= "Sexo: #{@student.gender}"
+%br
+= "Lugar de nacimiento: "
+= @student.city.blank? ? "No disponible" : @student.city
+= ","
+= @student.state.name.blank? ? "No disponible" : @student.state.name
+= ","
+= @student.country.name.blank? ? "No disponible" : @student.country.name
+%br
+= "Dirección #{@student.contact.address1}" 
+%br
+= "IFE: #{@student.ife}"
+%br
+= "CURP: #{@student.curp}"
+%br
+= "Contacto en caso de accidente: #{@student.accident_contact} (#{@student.accident_phone})"
+%br
+= "Seguridad Social: #{@student.ssn}"
+%br
+= "Tipo de sangre: #{@student.blood_type}"
+%br
+= "Pasaporte: " 
+= @student.passport.blank? ? "No disponible" : @student.passport
+%br
+= "Email: #{@student.email}"
+%br
+
+%h3= "Datos académicos"
+= "Tiempo estudiante: #{@year} #{@text_year} #{@month} #{@text_month}, Ciclos: "
+- tcs_size = @student.term_students.size
+- if tcs_size > @student.program.terms_duration
+  %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_duration})
+- else
+  = "#{tcs_size} (#{@student.program.terms_duration})"
+%br
+= "Asesor: #{@asesor}"
+%br
+= "Coasesor: #{@coasesor}"
+%br
+= "Fecha de inicio: #{@student.start_date}"
+%br
+= "CVU: #{@student.cvu}"
+%br
+= "Campus: #{@student.campus_id}"
+%br
+= "Ubicación: #{@student.location}"
+%br
+= "Grado Anterior: #{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
+%br
+
+%h4= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"

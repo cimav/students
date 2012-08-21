@@ -1,0 +1,41 @@
+!!!
+%html
+  %head
+    %title= @page_title || 'Alumnos CIMAV'
+    = stylesheet_link_tag "application"
+    /[if lt IE 8]
+    =# javascript_include_tag :defaults
+    =# javascript_include_tag 'jquery-ui-1.8.11.custom.min.js'
+    - if !@include_js.nil?
+      = javascript_include_tag @include_js
+    = csrf_meta_tag
+  %body
+    #standalone-content
+      #top 
+        = "Alumnos CIMAV "
+        = "["
+        %a{'href' => "/logout"}= "salir"
+        = "]"
+      #menu
+        %table
+          %tr
+            %td
+              = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium"
+          %tr
+            %td
+              = "#{@student.first_name} #{@student.last_name}"
+              %br
+              = "Matrícula: #{@student.card}"
+              %br
+              =  @student.program.name
+              %br
+              %a{'href' => "/"}= "Inicio"
+              %br
+              %a{'href' => "/horarios/#{@student.id}/0"}= "Horarios"
+              %br
+              %a{'href' => "/calificaciones/#{@student.id}/0"}= "Calificaciones"
+              %br
+              %a{'href' => "/kardex/#{@student.id}"}= "Kardex"
+      #content
+        = yield
+

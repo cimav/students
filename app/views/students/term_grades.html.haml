@@ -1,0 +1,102 @@
+#student-term_grades-header
+  #student-term_grades-title
+    %h2 Calificaciones 
+  %table#student-term_grades-filter
+    %tbody
+      %tr
+        - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
+        - terms.sort.each do |j|
+          %td
+            - if j[1].to_i == @term_id.to_i
+              %b= "<"
+            %a{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
+            - if j[1].to_i == @term_id.to_i
+              %b= ">"
+#student-grades-area
+- if @is_pdf 
+  = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
+  %h1= @student.full_name
+  %h4= @student.program.name
+
+-if @ts.nil?
+  = "No hay datos para el ciclo #{@term_id}"
+-else
+  #tc-header
+    #tc-title
+      %h4= "Ciclo Escolar: #{@ts.term.name} (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
+  
+  - if !@is_pdf 
+    .pdf-link= link_to "PDF", :controller => "students", :action => "term_grades", :id => @ts.student_id, :term_id => @ts.term_id, :format => 'pdf'
+  
+  %table#grades_table
+    %tr 
+      %th.centered= "Clave"
+      %th= "Materia"
+      %th.centered= "Calificación"
+      %th.centered= "Periodo"
+      %th.centered= "Asignatura"
+    - c = 0 
+    - total = 0 
+    - @grades.each do |g| 
+      - grade = (g.grade.nil?)?0:g.grade
+      - total += grade
+      - c += 1
+      - if c % 2 == 0 
+        - klass = 'row-even'
+      - else
+        - klass = 'row-odd'
+      %tr{:class => klass}
+        %td.centered= g.code
+        %td= g.name
+        %td.centered= grade
+        %td.centered= @ts.term.name
+        %td.centered= "OBLIGATORIA"
+    - if c == 0
+      - avg = 0 
+    - else
+      - avg = total / c
+  
+    - c += 1
+    - if c % 2 == 0
+      - klass = 'row-even'
+    - else
+      - klass = 'row-odd'
+    %tr{:class => klass}
+      %td= " "
+      %td= " "
+      %td.centered= "."
+      %td= " "
+      %td= " "
+  
+    - c += 1
+    - if c % 2 == 0
+      - klass = 'row-even'
+    - else
+      - klass = 'row-odd'
+    %tr{:class => klass}
+      %td= " "
+      %td= " "
+      %td.centered= "."
+      %td= " "
+      %td= " "
+  
+    - c += 1
+    - if c % 2 == 0
+      - klass = 'row-even'
+    - else
+      - klass = 'row-odd'
+    %tr{:class => klass}
+      %td
+      %td
+        %strong= "PROMEDIO"
+      %td.centered
+        %strong= sprintf( "%0.02f", avg)
+      %td
+      %td
+  
+  
+  - if @is_pdf
+    #grades_footer
+      #scholar_control_name= "M.H. Carmen Nicté Ortiz Villanueva"
+      #scholar_control_label= "Servicios Escolares"
+  
