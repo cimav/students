@@ -11,31 +11,40 @@
     = csrf_meta_tag
   %body
     #standalone-content
-      #top 
-        = "Alumnos CIMAV "
-        = "["
-        %a{'href' => "/logout"}= "salir"
-        = "]"
+      #top-bar 
+        #nav-select 
+          = "Alumnos CIMAV"
+        #account
+          = "["
+          %a{'href' => "/logout"}= "salir"
+          = "]"
       #menu
         %table
           %tr
             %td
-              = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium"
+              = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium", :width=>"100px", :height=>"100px", :alt=>"Buscando imagen..."
           %tr
             %td
-              = "#{@student.first_name} #{@student.last_name}"
+              %b= "#{@student.first_name} #{@student.last_name}"
               %br
-              = "Matrícula: #{@student.card}"
+              %b=  @student.program.name
               %br
-              =  @student.program.name
               %br
-              %a{'href' => "/"}= "Inicio"
+              %a.menu{'href' => "/"}= "Inicio"
+              - if @screen=="index"
+                = image_tag "/assets/left-arrow-blue.png"
               %br
-              %a{'href' => "/horarios/#{@student.id}/0"}= "Horarios"
+              %a.menu{'href' => "/horarios/#{@student.id}/0"}= "Horarios"
+              - if @screen=="schedule_table"
+                = image_tag "/assets/left-arrow-blue.png"
               %br
-              %a{'href' => "/calificaciones/#{@student.id}/0"}= "Calificaciones"
+              %a.menu{'href' => "/calificaciones/#{@student.id}/0"}= "Calificaciones"
+              - if @screen=="term_grades"
+                = image_tag "/assets/left-arrow-blue.png"
               %br
-              %a{'href' => "/kardex/#{@student.id}"}= "Kardex"
+              %a.menu{'href' => "/kardex/#{@student.id}"}= "Kardex"
+              - if @screen=="kardex"
+                = image_tag "/assets/left-arrow-blue.png"
       #content
         = yield
 

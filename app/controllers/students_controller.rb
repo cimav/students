@@ -3,6 +3,7 @@ class StudentsController < ApplicationController
   respond_to :html, :xml, :json
 
   def kardex
+    @screen="kardex"
     @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
 
     respond_with do |format|
@@ -24,6 +25,7 @@ class StudentsController < ApplicationController
   end
 
   def term_grades
+    @screen="term_grades"
     @is_pdf = false
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
 
@@ -55,6 +57,7 @@ class StudentsController < ApplicationController
   end 
 
   def schedule_table
+    @screen="schedule_table"
     @is_pdf = false
     @student = Student.find(params[:id])
     

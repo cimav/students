@@ -1,52 +1,81 @@
-%h3= "Datos personales"
-= "Sexo: #{@student.gender}"
-%br
-= "Lugar de nacimiento: "
-= @student.city.blank? ? "No disponible" : @student.city
-= ","
-= @student.state.name.blank? ? "No disponible" : @student.state.name
-= ","
-= @student.country.name.blank? ? "No disponible" : @student.country.name
-%br
-= "Dirección #{@student.contact.address1}" 
-%br
-= "IFE: #{@student.ife}"
-%br
-= "CURP: #{@student.curp}"
-%br
-= "Contacto en caso de accidente: #{@student.accident_contact} (#{@student.accident_phone})"
-%br
-= "Seguridad Social: #{@student.ssn}"
-%br
-= "Tipo de sangre: #{@student.blood_type}"
-%br
-= "Pasaporte: " 
-= @student.passport.blank? ? "No disponible" : @student.passport
-%br
-= "Email: #{@student.email}"
-%br
+%h2= "Datos personales"
+%table.data{:align=>'center',:width=>'100%'}
+  %tr
+    %td.left= "Sexo: "
+    %td.right
+      - if @student.gender=='F'
+        = "Mujer"
+      - if @student.gender=='H'
+        = "Hombre"
+  %tr
+    %td.left= "Lugar de nacimiento: "
+    %td.right
+      = @student.city.blank? ? "No disponible" : @student.city
+      = ","
+      = @student.state.name.blank? ? "No disponible" : @student.state.name
+      = ","
+      = @student.country.name.blank? ? "No disponible" : @student.country.name
+  %tr
+    %td.left= "Dirección:"
+    %td.right=@student.contact.address1 
+  %tr
+    %td.left= "IFE:" 
+    %td.right=@student.ife
+  %tr
+    %td.left="CURP:"
+    %td.right=@student.curp
+  %tr
+    %td.left="Contacto en caso de accidente:"
+    %td.right="#{@student.accident_contact} (#{@student.accident_phone})"
+  %tr
+    %td.left="Seguridad Social:" 
+    %td.right=@student.ssn
+  %tr
+    %td.left= "Tipo de sangre:"
+    %td.right= @student.blood_type
+  %tr
+    %td.left= "Pasaporte: " 
+    %td.right= @student.passport.blank? ? "No disponible" : @student.passport
+  %tr
+    %td.left= "Email:"
+    %td.right= @student.email
 
-%h3= "Datos académicos"
-= "Tiempo estudiante: #{@year} #{@text_year} #{@month} #{@text_month}, Ciclos: "
-- tcs_size = @student.term_students.size
-- if tcs_size > @student.program.terms_duration
-  %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_duration})
-- else
-  = "#{tcs_size} (#{@student.program.terms_duration})"
-%br
-= "Asesor: #{@asesor}"
-%br
-= "Coasesor: #{@coasesor}"
-%br
-= "Fecha de inicio: #{@student.start_date}"
-%br
-= "CVU: #{@student.cvu}"
-%br
-= "Campus: #{@student.campus_id}"
-%br
-= "Ubicación: #{@student.location}"
-%br
-= "Grado Anterior: #{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
-%br
+%h2= "Datos académicos"
+%table.data{:align=>'center',:width=>'100%'}
+  %tr
+    %td.left= "Matricula: "
+    %td.right= @student.card
+  %tr
+    %td.left= "Tiempo estudiante: "
+    %td.right= "#{@year} #{@text_year} #{@month} #{@text_month}"
+  %tr
+    %td.left= "Ciclos Cursados (Ciclos Totales):"
+    %td
+      - tcs_size = @student.term_students.size
+      - if tcs_size > @student.program.terms_duration
+        %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_duration})
+      - else
+        = "#{tcs_size} (#{@student.program.terms_duration})"
+  %tr
+    %td.left= "Asesor:"
+    %td.right= @asesor
+  %tr
+    %td.left= "Coasesor:" 
+    %td.right= @coasesor
+  %tr
+    %td.left= "Fecha de inicio:"
+    %td.right= @student.start_date
+  %tr
+    %td.left= "CVU:"
+    %td.right= @student.cvu
+  %tr
+    %td.left= "Campus:" 
+    %td.right= @student.campus.name
+  %tr
+    %td.left= "Ubicación:"
+    %td.right= @student.location
+  %tr
+    %td.left= "Grado Anterior:"
+    %td.right= "#{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
 
 %h4= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"

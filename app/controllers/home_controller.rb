@@ -4,6 +4,7 @@ class HomeController < ApplicationController
 
 
   def index
+    @screen="index"
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
     @asesor   = Staff.find(@student.supervisor).full_name
     @coasesor = Staff.find(@student.co_supervisor).full_name 

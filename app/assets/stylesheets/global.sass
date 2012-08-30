@@ -1,15 +1,37 @@
-div#menu
+#menu
   border: 1px solid black
   position: absolute
   width: 300px
   height: 800px
   left: 10px
   right: 20px
-
-div#content
-  border: 1px solid black
+  top: 40px
+  a.menu
+    color: $blue-strong
+    text-decoration: none
+    &:hover 
+      background-color: $light-grey
+    
+#content
+  //border: 1px solid black
   position: absolute
   width: 1200px
-  left: 325px
+  left: 365px
   right: 200px
-
+  top: 40px
+  h2 
+    color: $blue-strong
+    font-size: 1.6em
+  h2.centered
+    text-align: center
+  table.data
+    //border: 1px solid black
+    td.left
+      //border: 1px solid black
+      font-weight: bold
+      padding-right: 20px
+      width: 30%
+    td.right
+      padding-left: 0px
+      text-align: left
+   
