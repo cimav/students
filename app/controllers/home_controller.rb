@@ -6,12 +6,15 @@ class HomeController < ApplicationController
   def index
     @screen="index"
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
-    @asesor   = Staff.find(@student.supervisor).full_name
-    @coasesor = Staff.find(@student.co_supervisor).full_name 
-    #@staffs = Staff.order('first_name').includes(:institution)
-    #@countries = Country.order('name')
-    #@institutions = Institution.order('name')
-    #@states = State.order('code')  
+
+    if !@student.supervisor.nil?
+      @asesor   = Staff.find(@student.supervisor).full_name
+    end
+    
+    if !@student.supervisor.nil?
+      @coasesor = Staff.find(@student.co_supervisor).full_name 
+    end
+
     today = Date.today
     yyyy  = today.year - @student.start_date.year
     m = today.month - @student.start_date.month
