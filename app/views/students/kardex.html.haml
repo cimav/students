@@ -13,6 +13,10 @@
 - counter_grade = 0 
 - sum = 0 
 - avg = 0 
+
+- if !@is_pdf
+  %h2 Kardex
+
 %table#grades_table  
   %tr 
     %th.centered= "Nombre de la Materia"
@@ -49,7 +53,5 @@
     - else
       - avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
 
-
-%h5= "Estatus: #{@student.status_type}"
 %h5= "Promedio: #{avg}"
 

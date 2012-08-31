@@ -19,32 +19,30 @@
           %a{'href' => "/logout"}= "salir"
           = "]"
       #menu
-        %table
-          %tr
-            %td
-              = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium", :width=>"100px", :height=>"100px", :alt=>"Buscando imagen..."
-          %tr
-            %td
-              %b= "#{@student.first_name} #{@student.last_name}"
-              %br
-              %b=  @student.program.name
-              %br
-              %br
-              %a.menu{'href' => "/"}= "Inicio"
-              - if @screen=="index"
-                = image_tag "/assets/left-arrow-blue.png"
-              %br
-              %a.menu{'href' => "/horarios/#{@student.id}/0"}= "Horarios"
-              - if @screen=="schedule_table"
-                = image_tag "/assets/left-arrow-blue.png"
-              %br
-              %a.menu{'href' => "/calificaciones/#{@student.id}/0"}= "Calificaciones"
-              - if @screen=="term_grades"
-                = image_tag "/assets/left-arrow-blue.png"
-              %br
-              %a.menu{'href' => "/kardex/#{@student.id}"}= "Kardex"
-              - if @screen=="kardex"
-                = image_tag "/assets/left-arrow-blue.png"
+        %br
+        %center
+          = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium", :width=>"100px", :height=>"100px", :alt=>"Buscando imagen...", :align=>"center"
+          %br
+          %strong= "#{@student.first_name} #{@student.last_name}"
+          %br
+          %strong=  @student.program.name
+          %br
+          %br
+        %a.menu{'href' => "/"}= "  Inicio"
+        - if @screen=="index"
+          = image_tag "/assets/left-arrow-blue.png"
+        %br
+        %a.menu{'href' => "/horarios/#{@student.id}/0"}= "  Horarios"
+        - if @screen=="schedule_table"
+          = image_tag "/assets/left-arrow-blue.png"
+        %br
+        %a.menu{'href' => "/calificaciones/#{@student.id}/0"}= "  Calificaciones"
+        - if @screen=="term_grades"
+          = image_tag "/assets/left-arrow-blue.png"
+        %br
+        %a.menu{'href' => "/kardex/#{@student.id}"}= "  Kardex"
+        - if @screen=="kardex"
+          = image_tag "/assets/left-arrow-blue.png"
       #content
         = yield
 

@@ -1,29 +1,39 @@
-#student-term_grades-header
-  #student-term_grades-title
-    %h2 Calificaciones 
-  %table#student-term_grades-filter
-    %tbody
-      %tr
-        - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
-        - terms.sort.each do |j|
-          %td
-            - if j[1].to_i == @term_id.to_i
-              %b= "<"
-            %a{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
-            - if j[1].to_i == @term_id.to_i
-              %b= ">"
+- if !@is_pdf
+  #student-term_grades-header
+    #student-term_grades-title
+      %h2 Calificaciones 
+
 #student-grades-area
 - if @is_pdf 
   = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
-  %h1= @student.full_name
-  %h4= @student.program.name
+  %center
+    %h3= "CALIFICACIONES"
+  %h4= "Matrícula: #{@student.card}"
+  %h4= "Nombre: #{@student.full_name}"
+  %h4= "Programa: #{@student.program.name}"
 
 -if @ts.nil?
   = "No hay datos para el ciclo #{@term_id}"
 -else
   #tc-header
+    -if !@is_pdf
+      %table.menu-top
+        %tbody
+          %tr
+            - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
+            - terms.sort.each do |j|
+              %td
+                - if j[1].to_i == @term_id.to_i
+                  %a.menu-selected{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
+                  = image_tag "/assets/left-arrow-blue.png"
+                - else
+                  %a.menu{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
+    %br
     #tc-title
-      %h4= "Ciclo Escolar: #{@ts.term.name} (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
+      -if @is_pdf
+        %h4= "Ciclo Escolar: #{@ts.term.name} (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
+      -else
+        %div= "(#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
   
   - if !@is_pdf 
     .pdf-link= link_to "PDF", :controller => "students", :action => "term_grades", :id => @ts.student_id, :term_id => @ts.term_id, :format => 'pdf'
