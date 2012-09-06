@@ -11,4 +11,6 @@ Students::Application.routes.draw do
   match '/calificaciones/:id/:term_id' => 'students#term_grades'
   
   match '/horarios/:id/:term_id' => 'students#schedule_table'
+ 
+  match '/servicios/:id' => 'home#services'
 end

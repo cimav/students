@@ -39,4 +39,9 @@ class HomeController < ApplicationController
       @text_month = "meses"
     end
   end
+
+  def services
+    @student = Student.includes(:program).find(session[:user_id])
+    @screen="services"
+  end
 end

@@ -6,7 +6,7 @@
   %h4= "Nombre: #{@student.full_name}"
   %h4= "Programa: #{@student.program.name}"
 
-- if !@is_pdf 
+-# if !@is_pdf 
   .pdf-link= link_to "PDF", :controller => "students", :action => "kardex", :id=> @student.id, :format => 'pdf'
 
 - counter = 0 
@@ -54,4 +54,8 @@
       - avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
 
 %h5= "Promedio: #{avg}"
+
+%br
+%strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"
+
 

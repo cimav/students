@@ -47,6 +47,10 @@
           - if @screen=="kardex"
             = image_tag "/assets/left-arrow-blue.png"
           %br
+          %a.menu{'href' => "/servicios/#{@student.id}"}= "  Servicios"
+          - if @screen=="services"
+            = image_tag "/assets/left-arrow-blue.png"
+          %br
           %br
       #content
         = yield

@@ -54,3 +54,6 @@
               .session-staff= k['staff_name']
               .session-comments= k['comments']
 
+- if !@is_pdf
+  %br
+  %strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"
