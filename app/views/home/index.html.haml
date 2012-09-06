@@ -17,7 +17,7 @@
       = @student.country.blank? ? "No disponible" : @student.country.name
   %tr.row-odd
     %td.left= "Dirección:"
-    %td.right=@student.contact.address1 
+    %td.right= @student.contact.blank? ? "No disponible" : @student.contact.address1
   %tr.row-even
     %td.left= "IFE:" 
     %td.right=@student.ife
