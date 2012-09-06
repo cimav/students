@@ -7,11 +7,11 @@ class HomeController < ApplicationController
     @screen="index"
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
 
-    if !@student.supervisor.nil?
+    if !@student.supervisor.nil? and !@student.supervisor.blank?
       @asesor   = Staff.find(@student.supervisor).full_name
     end
     
-    if !@student.supervisor.nil?
+    if !@student.co_supervisor.nil? and !@student.co_supervisor.blank?
       @coasesor = Staff.find(@student.co_supervisor).full_name 
     end
 

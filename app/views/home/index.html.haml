@@ -12,9 +12,9 @@
     %td.right
       = @student.city.blank? ? "No disponible" : @student.city
       = ","
-      = @student.state.name.blank? ? "No disponible" : @student.state.name
+      = @student.state.blank? ? "No disponible" : @student.state.name
       = ","
-      = @student.country.name.blank? ? "No disponible" : @student.country.name
+      = @student.country.blank? ? "No disponible" : @student.country.name
   %tr.row-odd
     %td.left= "Dirección:"
     %td.right=@student.contact.address1 
@@ -71,7 +71,7 @@
     %td.right= @student.cvu
   %tr.row-even
     %td.left= "Campus:" 
-    %td.right= @student.campus.name
+    %td.right= @student.campus.blank? ? "No disponible" : @student.campus.name
   %tr.row-odd
     %td.left= "Ubicación:"
     %td.right= @student.location
