@@ -12,8 +12,8 @@ class ApplicationController < ActionController::Base
     end
 
     if session[:user_auth].blank?
-      user = Student.where(:email => session[:user_email], :status => Student::ACTIVE).first
-      session[:user_auth] = user && user.email == session[:user_email]
+      user = Student.where("(email = ? OR email_cimav = ?) AND status = ?",session[:user_email], session[:user_email],Student::ACTIVE).first
+      session[:user_auth] = user && ( user.email == session[:user_email] || user.email_cimav == session[:user_email])
       if session[:user_auth]
         session[:user_id] = user.id
       end
