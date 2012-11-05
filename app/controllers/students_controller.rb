@@ -63,7 +63,9 @@ class StudentsController < ApplicationController
     
     if params[:term_id].to_i == 0
       @terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
-      @term_id = @terms.sort.last[1]
+      if !@terms.blank?
+        @term_id = @terms.sort.last[1]
+      end
     else
       @term_id = params[:term_id]
     end 

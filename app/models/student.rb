@@ -20,6 +20,9 @@ class Student < ActiveRecord::Base
   has_many :student_file
   accepts_nested_attributes_for :student_file
 
+  has_many :student_advances_file
+  accepts_nested_attributes_for :student_advances_file
+
   has_many :term_students
   accepts_nested_attributes_for :term_students
 

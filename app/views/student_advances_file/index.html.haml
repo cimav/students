@@ -1,0 +1,36 @@
+= stylesheet_link_tag "application"
+= stylesheet_link_tag "student_advances_file"
+= javascript_include_tag 'jquery'
+
+%div{'id'=>'advances_files'}
+  %h2= "Avances"
+  - @term_student.each_with_index do |ts, index|
+    %a{"class"=>"menu-selected"}= "Ciclo: #{ts.term.name}"
+    - counter = 0
+    - sat = StudentAdvancesFile::STUDENT_ADVANCE_TYPE.clone
+    - StudentAdvancesFile.where(:term_student_id=>ts.id).each do |saf|
+      %div{'id'=>"student_advances_file_#{saf.id}",'class'=>'file_class'}
+        = "#{StudentAdvancesFile::STUDENT_ADVANCE_TYPE[saf.student_advance_type]}:"
+        %a{'href' => "/avances/#{saf.id}/file"}= saf.description
+        = link_to 'Eliminar archivo', "/avances/borrar/#{saf.id}", :class => 'delete-file'
+        - sat.delete(saf.student_advance_type)
+        - counter= counter+1
+    - if counter != 2
+      = form_for(StudentAdvancesFile.new, :url => { :action => "upload_file" }, :html => {:id => 'item-upload-file-form', :multipart => true}) do |f|
+        %div{'id'=>"upload_div",'class'=>'file_upload'}
+          = f.hidden_field :term_student_id, {:value => ts.id }
+          = f.select :student_advance_type, sat.invert.sort {|a,b| a[1] <=> b[1] }
+          = f.file_field :file, {"multiple" => "multiple"}
+          = f.submit "Subir Archivo"
+  
+  %p    
+    -if !flash[:notice].nil? 
+      = flash[:notice]
+    -if !flash[:error].nil?
+      = flash[:error]
+
+:javascript
+  $('.delete-file').click(function()
+  {    if(confirm("¿Esta seguro?")){return true;}else{
+       return false;}
+  });

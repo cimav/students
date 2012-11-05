@@ -1,7 +1,7 @@
 !!!
 %html
   %head
-    %title= @page_title || 'Alumnos CIMAV'
+    %title= @page_title || "Alumnos CIMAV"
     = stylesheet_link_tag "application"
     /[if lt IE 8]
     =# javascript_include_tag :defaults
@@ -23,7 +23,10 @@
         %br
         %br
         %center
-          = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium", :width=>"100px", :height=>"100px", :alt=>"Buscando imagen...", :align=>"center"
+          - if @student.image_url.nil?
+            = image_tag "http://posgrado.cimav.edu.mx/assets/student/fallback/medium_default.jpg", :id => "img-medium-#{@student.id}", :class=> "img-medium", :width=>"100px", :height=>"100px", :alt=>"Buscando imagen...", :align=>"center"
+          - else
+            = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url(:medium)}", :id => "img-medium-#{@student.id}", :class=> "img-medium", :width=>"100px", :height=>"100px", :alt=>"Buscando imagen...", :align=>"center"
           %br
           %strong= "#{@student.first_name} #{@student.last_name}"
           %br
@@ -45,6 +48,10 @@
           %br
           %a.menu{'href' => "/kardex/#{@student.id}"}= "  Kardex"
           - if @screen=="kardex"
+            = image_tag "/assets/left-arrow-blue.png"
+          %br
+          %a.menu{'href' => "/avances"}= "  Avances"
+          - if @screen=="advances"
             = image_tag "/assets/left-arrow-blue.png"
           %br
           %a.menu{'href' => "/servicios/#{@student.id}"}= "  Servicios"

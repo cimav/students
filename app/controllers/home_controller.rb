@@ -2,7 +2,6 @@ class HomeController < ApplicationController
   before_filter :auth_required
   respond_to :html, :json
 
-
   def index
     @screen="index"
     @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
@@ -44,4 +43,9 @@ class HomeController < ApplicationController
     @student = Student.includes(:program).find(session[:user_id])
     @screen="services"
   end
+  
+  def student_advances_files
+    @student = Student.includes(:program).find(session[:user_id])
+    @screen="advances"
+  end 
 end

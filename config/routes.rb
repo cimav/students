@@ -11,6 +11,12 @@ Students::Application.routes.draw do
   match '/calificaciones/:id/:term_id' => 'students#term_grades'
   
   match '/horarios/:id/:term_id' => 'students#schedule_table'
+  match '/avances' => 'home#student_advances_files'
+  
+  match '/avances/borrar/:id' => 'student_advances_file#destroy'
+  match '/avances/archivo' => 'student_advances_file#index'
+  match '/avances/subir_archivo' => 'student_advances_file#upload_file'
+  match '/avances/:id/file' => 'student_advances_file#file'
  
   match '/servicios/:id' => 'home#services'
 end
