@@ -3,7 +3,6 @@ class StudentAdvancesFileController < ApplicationController
   respond_to :html, :json
   
   def index
-    @include_js =  "jquery"
     @student = Student.includes(:program).find(session[:user_id])
     @term_student = TermStudent.joins(:term).where("student_id=? and start_date<=? and end_date>=?",@student.id,Date.today,Date.today)
     render :layout=>false   

@@ -1,9 +1,10 @@
 = stylesheet_link_tag "application"
-= stylesheet_link_tag "student_advances_file"
-= javascript_include_tag 'jquery'
+<script src="/jquery.js" type="text/javascript"></script>
 
 %div{'id'=>'advances_files'}
   %h2= "Avances"
+  - if @term_student.size==0
+    = "No hay ciclos activos"
   - @term_student.each_with_index do |ts, index|
     %a{"class"=>"menu-selected"}= "Ciclo: #{ts.term.name}"
     - counter = 0
