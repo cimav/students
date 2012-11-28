@@ -10,6 +10,7 @@ class StudentAdvancesFileController < ApplicationController
 
   def destroy
     @saf = StudentAdvancesFile.find(params[:id])
+    @saf.student_advances_file_message.destroy_all
     @saf.destroy
     flash[:notice] = "Archivo Eliminado."
     redirect_to :action => 'index'
@@ -17,8 +18,6 @@ class StudentAdvancesFileController < ApplicationController
   
   def upload_file 
     file = params[:student_advances_file]['file']
-
-    logger.info "FILEEEEEEEEEEEEEEE: #{file.nil?} #{file.class}"    
 
     if file.nil?
       flash[:error] = "Debes elegir un archivo"

@@ -5,6 +5,9 @@ class TermStudent < ActiveRecord::Base
   has_many :term_student_payment
   accepts_nested_attributes_for :term_course_student
   accepts_nested_attributes_for :term_student_payment
+  
+  has_many :student_advances_files
+  accepts_nested_attributes_for :student_advances_files
 
   ACTIVE   = 1
   PENDING  = 2

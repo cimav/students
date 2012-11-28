@@ -1,0 +1,99 @@
+= javascript_include_tag "jquery"
+:javascript
+  $(document).ready(function(){
+    function delete_message(a){
+      if(!confirm("¿Seguro que desea eliminar este mensaje?")){return false;}
+      
+      $(this).attr("disabled","disabled");
+      var message_id =  a.attr("message_id");
+      var id = a.attr("id");
+      var data = $("#create_message_form").serialize();
+      var url = "/avances/mensajes/"+message_id
+      $.ajax({
+        type: 'DELETE',
+        url: url,
+        data: data,
+        success: function(data){
+          var jq  =  jQuery.parseJSON(data);
+          $("#div-message-"+message_id).remove();
+        },
+        error: function(xhr, textStatus, error){
+           var text = xhr.responseText;
+           try{
+             var jq   = jQuery.parseJSON(xhr.responseText); 
+             alert(text+"|"+jq.flash.error);
+           }
+           catch(e){
+             alert("Error desconocido: "+e.message)
+           }
+        },
+        complete: function(){
+          $("#the_button").removeAttr("disabled");
+        }
+      });
+        return false;
+    }
+
+    $(".delete-message").click(function(){delete_message($(this));return false;});
+   
+
+    $('#the_button').click(function(){
+      $(this).attr("disabled","disabled");
+      var url = '/avances/mensajes';
+      var data = $("#create_message_form").serialize();
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        success: function(data){
+              var jq  =  jQuery.parseJSON(data);
+              var div = document.createElement("div");
+              var a   = document.createElement("a")
+              var id = jq.flash.id
+              $(a).attr("id","delete-link-"+id)
+              $(a).attr("class","delete-message")
+              $(a).attr("message_id",id)
+              $(a).append(" Eliminar");
+              $(a).click(function(){
+                delete_message($(this));
+                return false;
+              });
+              $(div).attr("id","div-message-"+id)
+              $(div).html(jq.flash.notice);
+              $(div).append(a);
+              $('#div-messages').append(div);
+
+        },
+        error: function(xhr, textStatus, error){
+           var text = xhr.responseText;
+           var jq   = jQuery.parseJSON(xhr.responseText); 
+           alert(text+"|"+jq.flash.error);
+        },
+        complete: function(){
+          $("#the_button").removeAttr("disabled");
+          $("#student_advances_file_message_message").val("");
+        }
+     });
+
+      return false;
+    });
+  });
+
+%div{:id=>'div-messages'}
+  - @safms.each do |safm|
+    %div{:id=>"div-message-#{safm.id}"}
+      = safm.attachable.first_name
+      = safm.attachable.last_name 
+      = "-"
+      = safm.message
+      - if safm.attachable_type=="Student"
+        %a{:id=>"delete-link-#{safm.id}",:message_id=>safm.id,:class=>"delete-message"}="Eliminar"
+      
+
+= form_for(StudentAdvancesFileMessage.new, :remote=>true, :html => { :'data-type' => 'html', :id => 'create_message_form' }) do |f|
+  =# Hay que cambiar el value a dinamico
+  = f.hidden_field :student_advances_file_id, {:value => @saf_id}
+  = f.text_area :message 
+  = button_tag "Enviar", :disable_with => "Enviando..." , :id=>"the_button"
+
+

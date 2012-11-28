@@ -19,4 +19,6 @@ Students::Application.routes.draw do
   match '/avances/:id/file' => 'student_advances_file#file'
  
   match '/servicios/:id' => 'home#services'
+
+  resources :student_advances_file_messages, :path=>'/avances/mensajes'
 end

@@ -1,4 +1,5 @@
 class Student < ActiveRecord::Base
+ #attr_accessible :student_advances_file_message_attributes
   belongs_to :program
   belongs_to :campus
 
@@ -25,6 +26,9 @@ class Student < ActiveRecord::Base
 
   has_many :term_students
   accepts_nested_attributes_for :term_students
+
+  has_many :student_advances_file_message, :as => :attachable
+  accepts_nested_attributes_for :student_advances_file_message
 
   mount_uploader :image, StudentImageUploader
 
@@ -59,7 +63,4 @@ class Student < ActiveRecord::Base
   def full_name_with_card
     "#{card}: #{first_name} #{last_name}" rescue ''
   end
-
-
-
 end
