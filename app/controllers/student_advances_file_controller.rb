@@ -31,6 +31,7 @@ class StudentAdvancesFileController < ApplicationController
       @student_advances_file.file = f
       @student_advances_file.description = f.original_filename
       if @student_advances_file.save
+        send_email(@student_advances_file)
         flash[:notice] = "Archivo subido exitosamente."
       else
         flash[:error] = "Error al subir archivo. #{@student_advances_file.errors.full_messages}"
@@ -43,4 +44,31 @@ class StudentAdvancesFileController < ApplicationController
     sf = StudentAdvancesFile.find(params[:id]).file
     send_file sf.to_s, :x_sendfile=>true
   end
+ 
+  def send_email(student_advances_file)
+    @student = Student.includes(:program).find(session[:user_id])
+    send_email_helper(@student,@student.supervisor)
+    send_email_helper(@student,@student.co_supervisor)
+    @student.advance.each do |adv|
+      if adv.advance_date>=Date.today - 300.days
+        send_email_helper(@student,adv.tutor1)
+        send_email_helper(@student,adv.tutor2)
+        send_email_helper(@student,adv.tutor3)
+        send_email_helper(@student,adv.tutor4)
+        send_email_helper(@student,adv.tutor5)
+      end
+    end 
+  end 
+
+  def send_email_helper(student,staff_id)
+    @staff   = Staff.find(staff_id)
+    if !@staff.email.blank?
+      SystemMailer.notification_email(@student,@staff).deliver
+    else
+      logger.info "Error: el email del staff #{staff_id} se encontraba vacio"
+    end
+  rescue
+    logger.info "Error al buscar el staff #{staff_id}" 
+  end
 end
+
