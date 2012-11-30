@@ -104,12 +104,16 @@
   - @term_student.each_with_index do |ts, index|
     %a{"class"=>"menu-selected"}= "Ciclo: #{ts.term.name}"
     - counter = 0
+    - advance_date_flag = 0
     - sat = StudentAdvancesFile::STUDENT_ADVANCE_TYPE.clone
     - StudentAdvancesFile.where(:term_student_id=>ts.id).each do |saf|
+      - if ts.term.advance_start_date <= Date.today and Date.today <= ts.term.advance_end_date
+        - advance_date_flag = 1
       %div{'id'=>"student_advances_file_#{saf.id}",'class'=>'file_class'}
         = "* #{StudentAdvancesFile::STUDENT_ADVANCE_TYPE[saf.student_advance_type]}:"
         %a{'href' => "/avances/#{saf.id}/file"}= saf.description
-        = link_to 'Eliminar archivo', "/avances/borrar/#{saf.id}", :class => 'delete-file', :saf_id=>saf.id
+        - if advance_date_flag == 1
+          = link_to 'Eliminar archivo', "/avances/borrar/#{saf.id}", :class => 'delete-file', :saf_id=>saf.id
         = link_to 'Mostrar mensajes', "#", :class => 'show-messages',:id=>"show-messages-#{saf.id}",:saf_id=>saf.id
         - safms = StudentAdvancesFileMessage.where(:student_advances_file_id=>saf.id)
         %div{'id'=>"student_advances_file_messages_add_#{saf.id}",'class'=>'add-messages','style'=>"display: none;"}
@@ -133,12 +137,16 @@
       %br
       %br
       %br
-      = form_for(StudentAdvancesFile.new, :url => { :action => "upload_file" }, :html => {:id => 'item-upload-file-form', :multipart => true}) do |f|
-        %div{'id'=>"upload_div",'class'=>'file_upload'}
-          = f.hidden_field :term_student_id, {:value => ts.id }
-          = f.select :student_advance_type, sat.invert.sort {|a,b| a[1] <=> b[1] }
-          = f.file_field :file, {"multiple" => "multiple"}
-          = f.submit "Subir Archivo"
+      
+      - if advance_date_flag==1
+        = form_for(StudentAdvancesFile.new, :url => { :action => "upload_file" }, :html => {:id => 'item-upload-file-form', :multipart => true}) do |f|
+          %div{'id'=>"upload_div",'class'=>'file_upload'}
+            = f.hidden_field :term_student_id, {:value => ts.id }
+            = f.select :student_advance_type, sat.invert.sort {|a,b| a[1] <=> b[1] }
+            = f.file_field :file, {"multiple" => "multiple"}
+            = f.submit "Subir Archivo"
+      - else
+        = "Las fechas para subir archivos de avances no estan abiertas para este ciclo"
   
   %p    
     -if !flash[:notice].nil? 
