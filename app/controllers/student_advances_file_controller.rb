@@ -32,6 +32,7 @@ class StudentAdvancesFileController < ApplicationController
       @student_advances_file.description = f.original_filename
       if @student_advances_file.save
         send_email(@student_advances_file)
+
         flash[:notice] = "Archivo subido exitosamente."
       else
         flash[:error] = "Error al subir archivo. #{@student_advances_file.errors.full_messages}"
@@ -61,14 +62,16 @@ class StudentAdvancesFileController < ApplicationController
   end 
 
   def send_email_helper(student,staff_id)
-    @staff   = Staff.find(staff_id)
-    if !@staff.email.blank?
-      SystemMailer.notification_email(@student,@staff).deliver
+    if staff_id.nil?
+      logger.info "Error al buscar el staff #{staff_id}" 
     else
-      logger.info "Error: el email del staff #{staff_id} se encontraba vacio"
+      @staff   = Staff.find(staff_id)
+      if !@staff.email.blank?
+        content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\"}"
+        @mail = Mail.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
+        @mail.save
+      end
     end
-  rescue
-    logger.info "Error al buscar el staff #{staff_id}" 
   end
 end
 

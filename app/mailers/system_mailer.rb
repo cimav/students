@@ -1,8 +1,10 @@
 class SystemMailer < ActionMailer::Base
- default from: "<email@mydomain.com>"
- def notification_email(student,staff)
-   @student = student
-   @staff = staff
-   mail(:to=> @staff.email,:subject=>"Se ha subido un archivo de avance")
+ default :from  => "atencion.posgrado@cimav.edu.mx"
+ def notification_email(object)
+   hash       = eval object.content
+   @full_name = hash[:full_name]
+   @email     = hash[:email]
+   @to        = object.to
+   mail(:to=> @to,:subject=>object.subject)
  end 
 end
