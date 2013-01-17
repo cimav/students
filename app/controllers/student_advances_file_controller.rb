@@ -68,7 +68,7 @@ class StudentAdvancesFileController < ApplicationController
       @staff   = Staff.find(staff_id)
       if !@staff.email.blank?
         content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\"}"
-        @mail = Mail.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
+        @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
         @mail.save
       end
     end
