@@ -53,10 +53,10 @@
     %td.left= "Ciclos Cursados (Ciclos Totales):"
     %td
       - tcs_size = @student.term_students.size
-      - if tcs_size > @student.program.terms_duration
-        %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_duration})
+      - if tcs_size > @student.program.terms_qty
+        %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
       - else
-        = "#{tcs_size} (#{@student.program.terms_duration})"
+        = "#{tcs_size} (#{@student.program.terms_qty})"
   %tr.row-even
     %td.left= "Asesor:"
     %td.right= @asesor
