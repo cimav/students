@@ -18,7 +18,7 @@ class HomeController < ApplicationController
     yyyy  = today.year - @student.start_date.year
     m = today.month - @student.start_date.month
     
-    if m > 0
+    if m >= 0
       @year  = yyyy
       @month = m
     else 
