@@ -1,5 +1,8 @@
 class TermCourseStudent < ActiveRecord::Base
-  # attr_accessible :title, :body
+  attr_accessible :id,:term_course_id,:term_student_id,:grade,:status,:created_at,:updated_at
+  
+  default_scope joins(:term_student=>[:student]).where('students.deleted=?',0)
+
   belongs_to :term_course
   belongs_to :term_student
 
