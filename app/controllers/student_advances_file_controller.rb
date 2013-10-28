@@ -4,7 +4,7 @@ class StudentAdvancesFileController < ApplicationController
   
   def index
     @student = Student.includes(:program).find(session[:user_id])
-    @term_student = TermStudent.joins(:term).where("student_id=? and start_date<=? and end_date>=?",@student.id,Date.today,Date.today)
+    @term_student = TermStudent.joins(:term).where("term_students.student_id=? and terms.start_date<=? and terms.end_date>=?",@student.id,Date.today,Date.today)
     render :layout=>false   
   end
 
