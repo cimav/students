@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %title= @page_title || "Alumnos CIMAV"
+    =# stylesheet_link_tag "application"
+    = stylesheet_link_tag "gobmx/gobmx"
+    /[if lt IE 8]
+    =# javascript_include_tag :defaults
+    =# javascript_include_tag 'jquery-ui-1.8.11.custom.min.js'
+    - if !@include_js.nil?
+      - @include_js.each do |js|
+        = javascript_include_tag js
+    = csrf_meta_tag
+  %body
+    #page{:style=>'height:768px;width:800px;'}
+      #container
+        = yield
+

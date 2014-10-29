@@ -17,6 +17,8 @@ Students::Application.routes.draw do
   match '/avances/archivo' => 'student_advances_file#index'
   match '/avances/subir_archivo' => 'student_advances_file#upload_file'
   match '/avances/:id/file' => 'student_advances_file#file'
+  
+  match '/inscripciones/:origin' => 'students#enrollment'
  
   match '/servicios/:id' => 'home#services'
 

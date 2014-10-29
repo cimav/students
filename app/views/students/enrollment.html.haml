@@ -1,0 +1,58 @@
+:javascript
+  $(document).ready(function() {
+    $("#btn_ok").click(function (){
+      $("#ajax_load").show();
+      
+      $("#ajax_load").hide();
+      $('#btn_ok').prop("disabled",true)
+      $("#emessage").show();
+    });
+  });
+
+.inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
+  %br
+    = "Registro de inscripción para el alumno "
+    %b= @student.full_name
+  %br
+    = "Ya se ha registrado el pago"
+    = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px'
+    = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px', :style=>'display: none'
+  %br
+    = "Las materias ya han sido aprobadas por el asesor"
+    = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px'
+    = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px', :style=>'display: none'
+
+
+.materias{:style=>'width:700px;margin: 0 auto;'}
+  %table.table-striped
+    %tr
+      %th= "#"
+      %th= "Materia"
+      %th= "Ciclo Escolar"
+    %tr
+      %td= "1"
+      %td= "Simulación de la Dispersión de Contaminantes"
+      %td= "2015-2 Chihuahua"
+        
+    %tr
+      %td= "2"
+      %td= "Caracterización de Materiales"
+      %td= "2015-2 Chihuahua"
+  
+    %tr
+      %td= "3"
+      %td= "Introducción a la Ciencia de Materiales"
+      %td= "2015-2 Chihuahua"
+  %p
+  #button-div
+    #button
+      %button.btn.btn-primary.btn-sm{:id=>'btn_ok'}="Aceptar"
+      = image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
+      %b#emessage{:style=>'display: none'}="Inscripción realizada exitosamente"
+
+  %p.small
+    ="Cualquier aclaracion o duda por favor comunicarse al departamento de posgrado antes de aceptar la inscripción"
+    ="atencion.posgrado@cimav.edu.mx"
+    ="o al 4391100"
+  .salir
+    %a{'href' => "/logout"}= "salir"

@@ -3,14 +3,19 @@ class SessionsController < ApplicationController
     session[:user_email] = auth_hash['info']['email']
 
     if authenticated?
-      redirect_to '/'
+      redirect_back_or '/'
     else
       render :text => '401 Unauthorized', :status => 401
     end
   end
 
   def destroy
+    if session[:forwarding_url]
+      logger.info "La sesion antes del destroy es: #{session[:forwarding_url]}"
+      @rescue_fu = session[:forwarding_url] 
+    end
     reset_session
+    session[:forwarding_url] = @rescue_fu
     redirect_to '/login'
   end
 

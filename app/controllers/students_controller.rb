@@ -132,5 +132,17 @@ class StudentsController < ApplicationController
       end
     end
   end
+  
+  def enrollment
+    @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
+    @origin   = params[:origin]
 
+    if @origin.eql? "gobmx"
+      @include_js =  ["gobmx/jquery-1.10.2.min","gobmx/bootstrap"]
+      render :layout=>'gobmx'
+    else #cimav
+      @screen="enrollment"
+      render :layout=>'application'
+    end
+  end
 end

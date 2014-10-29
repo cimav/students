@@ -24,7 +24,17 @@ class ApplicationController < ActionController::Base
   helper_method :authenticated?
 
   def auth_required
+    store_location
     redirect_to '/login' unless authenticated?
+  end
+
+  def store_location
+    session[:forwarding_url] = request.url if request.get?
+  end 
+
+  def redirect_back_or(default)
+    redirect_to(session[:forwarding_url] || default)
+    session.delete(:forwarding_url)
   end
 
 end
