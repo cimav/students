@@ -1,1 +1,16 @@
-=  "El alumno #{@full_name} <#{@email}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
+- if @hash[:view].eql? 1
+  = "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ya ha sido calificado, ahora puede elegir las materias para siguiente ciclo escolar en: http://academicos.cimav.edu.mx/inscripciones"
+- elsif @hash[:view].eql? 2
+  = "El alumno #{@hash[:full_name]} <#{@hash[:email]}> deberá ser presentado para baja ya que ha acumulado dos o más materias no acreditadas"
+- elsif @hash[:view].eql? 3
+  - a   = Advance.find(@hash[:advance])
+  - s   = Staff.find(@hash[:staff])
+  = "#{s.title} #{s.full_name} se le informa que hoy inicia el alta de calificaciones en linea, se debe da de alta la calificación de los avances de investigación del alumno #{a.student.full_name} <#{a.student.email}> en la siguiente liga: http://academicos.cimav.edu.mx/calificar/avance/#{a.id}"
+- elsif @hash[:view].eql? 4
+  - a   = Advance.find(@hash[:advance])
+  - s   = Staff.find(@hash[:staff])
+  - uri = "http://academicos.cimav.edu.mx/calificar/avance/#{a.id}/#{@hash[:token]}"
+  = "#{s.title} #{s.full_name} se le informa que hoy inicia el alta de calificaciones en linea, el cimav le ha asignado a usted uná liga donde puede dar de alta la calificación del avance de investigación del alumno  #{a.student.full_name} <#{a.student.email}>, tome en cuenta que una vez capturada la calificación el link se desactivara: #{uri}"
+  = "Si existe algún error por favor comunicarse al departamento de posgrado de cimav."
+- else
+  =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
