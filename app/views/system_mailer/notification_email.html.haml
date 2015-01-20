@@ -12,5 +12,7 @@
   - uri = "http://academicos.cimav.edu.mx/calificar/avance/#{a.id}/#{@hash[:token]}"
   = "#{s.title} #{s.full_name} se le informa que hoy inicia el alta de calificaciones en linea, el cimav le ha asignado a usted uná liga donde puede dar de alta la calificación del avance de investigación del alumno  #{a.student.full_name} <#{a.student.email}>, tome en cuenta que una vez capturada la calificación el link se desactivara: #{uri}"
   = "Si existe algún error por favor comunicarse al departamento de posgrado de cimav."
+- elsif @hash[:view].eql? 5
+  = "#{@hash[:full_name]}. Se le notifica que su asesor ya ha dado de alta las materias que puede tomar. Una vez que usted haya realizado su pago usted se puede completar el proceso de inscripción a travez de la siguiente liga: http://escolar.cimav.edu.mx/inscripciones/cimav"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
