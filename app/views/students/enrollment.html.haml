@@ -2,57 +2,118 @@
   $(document).ready(function() {
     $("#btn_ok").click(function (){
       $("#ajax_load").show();
-      
-      $("#ajax_load").hide();
-      $('#btn_ok').prop("disabled",true)
-      $("#emessage").show();
+      var s_id   = $("#s_id").val();
+      var url    = "/inscripcion/alumno/"+s_id;
+      $.ajax({
+        type: 'GET',
+        url: url,
+        success: function(data){
+           if(data.errors.length<=0){
+             $('#btn_ok').prop("disabled",true);
+             $("#emessage").show();
+           }
+           else
+           {
+             alert("Se presentaron los siguientes errores, por favor reportarlo a posgrado: "+data.errors)
+           }
+        },
+        error: function(xhr, textStatus, error){
+           alert("Error al inscribir, intentar de nuevo, si el error persiste comunicarse a posgrado");
+        },
+        complete: function(){
+           $("#ajax_load").hide();
+        }
+      }); 
+
     });
   });
 
-.inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
-  %br
-    = "Registro de inscripción para el alumno "
-    %b= @student.full_name
-  %br
-    = "Ya se ha registrado el pago"
-    = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px'
-    = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px', :style=>'display: none'
-  %br
-    = "Las materias ya han sido aprobadas por el asesor"
-    = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px'
-    = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px', :style=>'display: none'
+- if @student.size>0
+  - s = @student[0]
+  - access = true
+  .inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
+    %br
+      = "Registro de inscripción para el alumno "
+      %b= s.full_name
+      - @ts = TermStudent.where(:student_id=>s.id,:status=>6)
+      = hidden_field_tag 's_id', s.id
+      - if @ts.size >0 
+        - ts = @ts[0]
+        - ts_id = @ts[0].id
+      - else
+        - ts = nil
+        - ts_id = 0
 
-
-.materias{:style=>'width:700px;margin: 0 auto;'}
-  %table.table-striped
-    %tr
-      %th= "#"
-      %th= "Materia"
-      %th= "Ciclo Escolar"
-    %tr
-      %td= "1"
-      %td= "Simulación de la Dispersión de Contaminantes"
-      %td= "2015-2 Chihuahua"
-        
-    %tr
-      %td= "2"
-      %td= "Caracterización de Materiales"
-      %td= "2015-2 Chihuahua"
+      - @tcs = TermCourseStudent.where(:term_student_id=>ts_id,:status=>6)
+      - @tsp = TermStudentPayment.where(:term_student_id=>ts_id,:status=>3)
+    %br
+      - if @tsp.size>0
+        = "Ya se ha registrado el pago"
+        = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px'
+        = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px', :style=>'display: none'
+      - else
+        = "No se ha registrado el pago"
+        = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px', :style=>'display: none'
+        = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px'
+        - access = false
+    %br
+      - if !ts.nil?
+        - if @tcs.size>0
+          = "Las materias ya han sido aprobadas por el asesor"
+          = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px'
+          = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px', :style=>'display: none'
+        - else
+          = "Las materias todavía no han sido aprobadas por el asesor"
+          = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px', :style=>'display: none'
+          = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px'
+      - else
+        = "Las materias todavía no han sido aprobadas por el asesor"
+        = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px', :style=>'display: none'
+        = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px'
   
-    %tr
-      %td= "3"
-      %td= "Introducción a la Ciencia de Materiales"
-      %td= "2015-2 Chihuahua"
-  %p
-  #button-div
-    #button
-      %button.btn.btn-primary.btn-sm{:id=>'btn_ok'}="Aceptar"
-      = image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
-      %b#emessage{:style=>'display: none'}="Inscripción realizada exitosamente"
-
-  %p.small
-    ="Cualquier aclaracion o duda por favor comunicarse al departamento de posgrado antes de aceptar la inscripción"
-    ="atencion.posgrado@cimav.edu.mx"
-    ="o al 4391100"
-  .salir
-    %a{'href' => "/logout"}= "salir"
+  
+  .materias{:style=>'width:700px;margin: 0 auto;'}
+    %table.table-striped
+      - if @tcs.size>0
+        %tr
+          %th= "#"
+          %th= "Materia"
+          %th= "Ciclo Escolar"
+        - @tcs.each_with_index do |tcs,i|
+          %tr
+            %td= "1"
+            %td= tcs.term_course.course.name
+            %td= tcs.term_course.term.name
+      - else
+        %tr
+          %td= "No se han elegido materias"
+        - access = false
+          
+    %p
+    #button-div
+      #button
+        - if access
+          %button.btn.btn-primary.btn-sm{:id=>'btn_ok'}="Aceptar"
+        - else
+          %button.btn.btn-primary.btn-sm{:id=>'btn_ok',:disabled=>true}="Aceptar"
+        = image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
+        %b#emessage{:style=>'display: none'}="Inscripción realizada exitosamente"
+  
+    %p.small
+      ="Cualquier aclaracion o duda por favor comunicarse al departamento de posgrado antes de aceptar la inscripción"
+      ="atencion.posgrado@cimav.edu.mx"
+      ="o al 4391100"
+    - if @screen.eql? "enrollment"
+      .salir
+        %a{'href' => "/"}= "[Ir a escolar]"
+        %a{'href' => "/logout"}= "[Salir]"
+    - else
+      .salir
+      %a{'href' => "/logout"}= "[Salir]"
+-else
+  .inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
+    = "No hay ninguna preinscripcion programada"
+    %br
+    %a{'href' => "/"}= "[Ir a escolar]"
+    %br
+    %a{'href' => "/logout"}= "[Salir]"

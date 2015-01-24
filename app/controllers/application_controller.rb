@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
     end
 
     if session[:user_auth].blank?
-      user = Student.where("(email = ? OR email_cimav = ?) AND status = ?",session[:user_email], session[:user_email],Student::ACTIVE).first
+      user = Student.where("(email = ? OR email_cimav = ?) AND status in (1,6)",session[:user_email], session[:user_email]).first
       session[:user_auth] = user && ( user.email == session[:user_email] || user.email_cimav == session[:user_email])
       if session[:user_auth]
         session[:user_id] = user.id
@@ -27,6 +27,10 @@ class ApplicationController < ActionController::Base
     store_location
     redirect_to '/login' unless authenticated?
   end
+  
+  helper_method :current_user
+
+
 
   def store_location
     session[:forwarding_url] = request.url if request.get?
@@ -36,5 +40,10 @@ class ApplicationController < ActionController::Base
     redirect_to(session[:forwarding_url] || default)
     session.delete(:forwarding_url)
   end
+
+private
+def current_user
+  @current_user ||= Student.find(session[:user_id]) if session[:user_id]
+end 
 
 end

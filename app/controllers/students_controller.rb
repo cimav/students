@@ -134,15 +134,49 @@ class StudentsController < ApplicationController
   end
   
   def enrollment
-    @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
+    #@student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
+    @student  = Student.where(:status=>6,:id=>current_user.id)
+    
     @origin   = params[:origin]
 
     if @origin.eql? "gobmx"
       @include_js =  ["gobmx/jquery-1.10.2.min","gobmx/bootstrap"]
       render :layout=>'gobmx'
     else #cimav
+      @include_js =  ["gobmx/jquery-1.10.2.min","gobmx/bootstrap"]
       @screen="enrollment"
-      render :layout=>'application'
+      render :layout=>'gobmx'
     end
+  end
+
+  def endrollment
+    json = {}
+    @errors = []
+    @s_id = params[:s_id]
+
+    @student  = Student.where(:status=>6,:id=>current_user.id)
+    student   = @student[0]
+    student.status=1
+    if student.save
+      @ts = TermStudent.where(:student_id=>@student[0].id,:status=>6)
+      ts  = @ts[0] 
+      ts.status = 1
+      if ts.save
+        @tcs = TermCourseStudent.where(:status=>6,:term_student_id=>@ts[0].id)    
+        @tcs.each do |tcs|
+          tcs.status=1
+          if !tcs.save
+            @errors << 3
+          end
+        end
+      else
+        @errors << 2
+      end
+    else
+      @errors << 1
+    end
+
+    json[:errors]= @errors
+    render :json => json
   end
 end
