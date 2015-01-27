@@ -136,8 +136,34 @@ class StudentsController < ApplicationController
   def enrollment
     #@student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
     @student  = Student.where(:status=>6,:id=>current_user.id)
-    
     @origin   = params[:origin]
+    if @student.size>0
+      @ts = TermStudent.where(:student_id=>@student[0].id,:status=>6)
+      if @ts.size >0 
+        @ts2 = @ts[0]
+        @ts_id = @ts[0].id
+      else
+        @ts2 = nil
+        @ts_id = 0
+      end
+    
+      @tcs = TermCourseStudent.where(:term_student_id=>@ts_id,:status=>6)
+      @tsp = TermStudentPayment.where(:term_student_id=>@ts_id,:status=>3)
+    
+      @level = @student[0].program.level
+      @without_courses = false
+      if @level.eql? "2" and @tcs.size.eql? 0  ## para doctorado
+        adv = Advance.where(:student_id=>@student[0].id)
+        if @adv.size>=6
+          @without_courses = true
+        end
+      elsif @level.eql? "1" and @tcs.size.eql? 0  ## para maestria
+        t = TermCourse.joins(:term_course_students=>:term_student).joins(:course).where(:term_students=>{:student_id=>@student[0].id}).where("term_course_students.grade>=? AND courses.notes='[AI]'",70)
+        if t.size>0
+          @without_courses = true
+        end 
+      end
+    end
 
     if @origin.eql? "gobmx"
       @include_js =  ["gobmx/jquery-1.10.2.min","gobmx/bootstrap"]

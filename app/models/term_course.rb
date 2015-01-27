@@ -1,5 +1,5 @@
 class TermCourse < ActiveRecord::Base
-  # attr_accessible :title, :body
+ attr_accessible :id,:term_id,:course_id,:status,:created_at,:updated_at,:staff_id,:group,:term_course_students_attributes,:term_course_schedules_attributes
   belongs_to :term
   belongs_to :course
   belongs_to :staff
