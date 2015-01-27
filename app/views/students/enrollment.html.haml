@@ -30,7 +30,9 @@
 
 - if @student.size>0
   - s = @student[0]
-  - access = true
+  - tcs_access = false
+  - pay_access = false
+  - adv_access = false
   .inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
     %br
       = "Registro de inscripción para el alumno "
@@ -46,22 +48,29 @@
 
       - @tcs = TermCourseStudent.where(:term_student_id=>ts_id,:status=>6)
       - @tsp = TermStudentPayment.where(:term_student_id=>ts_id,:status=>3)
+    
+    - if s.program.level.eql? "2" and @tcs.size.eql? 0
+      - @adv = Advance.where(:student_id=>s.id)
+      = "Avances: #{@adv.size}"
+      - if @adv.size>=6
+        - adv_access = true
     %br
       - if @tsp.size>0
         = "Ya se ha registrado el pago"
         = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px'
         = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px', :style=>'display: none'
+        - pay_access = true
       - else
         = "No se ha registrado el pago"
         = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px', :style=>'display: none'
         = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px'
-        - access = false
     %br
       - if !ts.nil?
-        - if @tcs.size>0
+        - if @tcs.size>0 or adv_access
           = "Las materias ya han sido aprobadas por el asesor"
           = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px'
           = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px', :style=>'display: none'
+          - tcs_access = true
         - else
           = "Las materias todavía no han sido aprobadas por el asesor"
           = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px', :style=>'display: none'
@@ -92,7 +101,7 @@
     %p
     #button-div
       #button
-        - if access
+        - if pay_access and tcs_access
           %button.btn.btn-primary.btn-sm{:id=>'btn_ok'}="Aceptar"
         - else
           %button.btn.btn-primary.btn-sm{:id=>'btn_ok',:disabled=>true}="Aceptar"
