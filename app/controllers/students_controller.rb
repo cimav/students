@@ -153,7 +153,7 @@ class StudentsController < ApplicationController
       @level = @student[0].program.level
       @without_courses = false
       if @level.eql? "2" and @tcs.size.eql? 0  ## para doctorado
-        adv = Advance.where(:student_id=>@student[0].id)
+        @adv = Advance.where(:student_id=>@student[0].id)
         if @adv.size>=6
           @without_courses = true
         end
