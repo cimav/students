@@ -12,32 +12,22 @@
   %h4= "Nombre: #{@student.full_name}"
   %h4= "Programa: #{@student.program.name}"
 
+#tc-header    
+  %table.menu-top
+    %tbody
+      %tr
+        - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
+        - terms.sort.each do |j|
+          %td
+            - if j[1].to_i == @term_id.to_i
+              %a.menu-selected{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
+              = image_tag "/assets/left-arrow-blue.png"
+            - else
+              %a.menu{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
+
 -if @ts.nil?
   = "No hay datos para el ciclo #{@term_id}"
--else
-  #tc-header
-    -if !@is_pdf
-      %table.menu-top
-        %tbody
-          %tr
-            - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
-            - terms.sort.each do |j|
-              %td
-                - if j[1].to_i == @term_id.to_i
-                  %a.menu-selected{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
-                  = image_tag "/assets/left-arrow-blue.png"
-                - else
-                  %a.menu{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
-    %br
-    #tc-title
-      -if @is_pdf
-        %h4= "Ciclo Escolar: #{@ts.term.name} (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
-      -else
-        %div= "(#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
-  
-  -# if !@is_pdf 
-    .pdf-link= link_to "PDF", :controller => "students", :action => "term_grades", :id => @ts.student_id, :term_id => @ts.term_id, :format => 'pdf'
-  
+- else
   %table#grades_table
     %tr 
       %th.centered= "Clave"
@@ -103,12 +93,28 @@
         %strong= sprintf( "%0.02f", avg)
       %td
       %td
-  
-  
-  - if @is_pdf
-    #grades_footer
-      #scholar_control_name= "M.H. Carmen Nicté Ortiz Villanueva"
-      #scholar_control_label= "Servicios Escolares"
 
+%table
+  - @notas = @p_advances.notes rescue ""
+  %tr{:colspan=>terms.size}
+    %td
+      %br= "Comentarios al avance de investigación anterior:"
+      = @p_advances.title rescue ""
+      %br 
+      = text_area_tag "tutors_notes_0", @notas,:size=>"105x10",:disabled=>true
+
+  - @notas = @advances.notes rescue ""
+  %tr{:colspan=>terms.size}
+    %td
+      %br= "Comentarios al avance de investigación actual:"
+      = @advances.title rescue ""
+      %br 
+      = text_area_tag "tutors_notes_1", @notas,:size=>"105x10",:disabled=>true
+  %tr{:colspan=>terms.size}
+    %td
+      - if @advances.status.eql? "C"
+        %br= "Calificación Avance: #{@adv_avg}"
+      - else
+        %br= "La calificación del avance se mostrara hasta el cierre de calificaciones"
 %br
 %strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"

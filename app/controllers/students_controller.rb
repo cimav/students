@@ -27,17 +27,31 @@ class StudentsController < ApplicationController
   def term_grades
     @screen="term_grades"
     @is_pdf = false
-    @student = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    
+    @student = Student.joins(:term_students=>:term).includes(:program, :advance).find(current_user.id)
+    @terms     = @student.term_students.collect {|i| [i.term.name, i.term.id]}.sort
+
 
     if params[:term_id].to_i == 0
-      @terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
-      @term_id = @terms.sort.last[1]
+      @term_id   = @terms.last[1]
     else
       @term_id = params[:term_id]
     end 
+    
+    @tindex     = @terms.index(@terms.rassoc(@term_id.to_i))
+    @term       = Term.find(@term_id)
+ 
+    if @tindex!= 0
+      @p_term     = Term.find(@terms[@tindex - 1][1])
+      @p_advances = Advance.where("student_id=? AND advance_date between ? AND ?",@student.id,@p_term.start_date,@p_term.end_date).last
+    end
 
-    @ts = TermStudent.where(:student_id => params[:id], :term_id => @term_id).first
-    @grades = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE term_students.student_id = :student_id AND term_students.term_id = :term_id AND term_course_students.status = :status ORDER BY courses.name", {:student_id => params[:id], :term_id => @term_id, :status => TermCourseStudent::ACTIVE}])
+    @advances   = Advance.where("student_id=? AND advance_date between ? AND ?",@student.id,@term.start_date,@term.end_date).last
+    if @advances.status.eql? "C"
+      @adv_avg    = get_adv_avg(@advances)
+    end
+    @ts         = TermStudent.where(:student_id => params[:id], :term_id => @term_id).first
+    @grades   = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE term_students.student_id = :student_id AND term_students.term_id = :term_id AND term_course_students.status = :status ORDER BY courses.name", {:student_id => params[:id], :term_id => @term_id, :status => TermCourseStudent::ACTIVE}])
     respond_with do |format|
       format.html do
         #render :layout => false
@@ -55,6 +69,47 @@ class StudentsController < ApplicationController
       end 
     end 
   end 
+
+  def get_adv_avg(a)
+    grades = 0 
+    sum    = 0 
+    if !a.tutor1.nil?
+      if !a.grade1.nil?
+         sum = sum + a.grade1
+         grades = grades + 1
+      end
+    end
+    if !a.tutor2.nil?
+      if !a.grade2.nil?
+         sum = sum + a.grade2
+         grades = grades + 1
+      end
+    end
+    if !a.tutor3.nil?
+      if !a.grade3.nil?
+         sum = sum + a.grade3
+         grades = grades + 1
+      end
+    end
+    if !a.tutor4.nil?
+      if !a.grade4.nil?
+         sum = sum + a.grade4
+         grades = grades + 1
+      end
+    end
+    if !a.tutor5.nil?
+      if !a.grade5.nil?
+         sum = sum + a.grade5
+         grades = grades + 1
+      end
+    end
+
+    if !grades.eql? 0
+      return sum / grades
+    else
+      return nil
+    end
+  end
 
   def schedule_table
     @screen="schedule_table"
