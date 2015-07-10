@@ -112,9 +112,10 @@
       = text_area_tag "tutors_notes_1", @notas,:size=>"105x10",:disabled=>true
   %tr{:colspan=>terms.size}
     %td
-      - if @advances.status.eql? "C"
-        %br= "Calificación Avance: #{@adv_avg}"
-      - else
-        %br= "La calificación del avance se mostrara hasta el cierre de calificaciones"
+      - if !@advances.nil?
+        - if @advances.status.eql? "C" 
+          %br= "Calificación Avance: #{@adv_avg}"
+        - else
+          %br= "La calificación del avance se mostrara hasta el cierre de calificaciones"
 %br
 %strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"

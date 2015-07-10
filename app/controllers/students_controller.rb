@@ -47,8 +47,10 @@ class StudentsController < ApplicationController
     end
 
     @advances   = Advance.where("student_id=? AND advance_date between ? AND ?",@student.id,@term.start_date,@term.end_date).last
-    if @advances.status.eql? "C"
-      @adv_avg    = get_adv_avg(@advances)
+    if !@advances.nil?
+      if @advances.status.eql? "C"
+        @adv_avg    = get_adv_avg(@advances)
+      end
     end
     @ts         = TermStudent.where(:student_id => params[:id], :term_id => @term_id).first
     @grades   = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE term_students.student_id = :student_id AND term_students.term_id = :term_id AND term_course_students.status = :status ORDER BY courses.name", {:student_id => params[:id], :term_id => @term_id, :status => TermCourseStudent::ACTIVE}])
