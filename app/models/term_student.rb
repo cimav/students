@@ -1,7 +1,7 @@
 class TermStudent < ActiveRecord::Base
   attr_accessible :id,:term_id,:student_id,:notes,:status,:created_at,:updated_at,:term_student_payment_attributes
-  
-  default_scope joins(:student).where('students.deleted=?',0).readonly(false)
+  validates_uniqueness_of :term_id, scope: [:student_id]
+  #default_scope joins(:student).where('students.deleted=?',0).readonly(false)
 
   belongs_to :term
   belongs_to :student
@@ -17,8 +17,6 @@ class TermStudent < ActiveRecord::Base
   PENDING  = 2
   INACTIVE = 3
   PENROLLMENT   = 6
-
-
 
   STATUS = {ACTIVE   => 'Activo',
             PENDING  => 'Con pendientes',

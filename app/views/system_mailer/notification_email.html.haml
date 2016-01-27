@@ -19,6 +19,10 @@
   = "#{s.title} #{s.full_name} we inform you than today iniciate the online grades registration process. You must grade the research advance of #{a.student.full_name} <#{a.student.email}> through this link: #{uri}"
   = "Please download the research document from the next link: #{uri_doc}"
 - elsif @hash[:view].eql? 5
-  = "#{@hash[:full_name]}. Se le notifica que su asesor ya ha dado de alta las materias que puede tomar. Una vez que usted haya realizado su pago usted se puede completar el proceso de inscripción a travez de la siguiente liga: http://escolar.cimav.edu.mx/inscripciones/cimav"
+  = "Se le notifica que el alumno #{@hash[:full_name]} <#{@hash[:email]}> ha dado de alta las materias que puede tomar. Para completar la inscripción por favor de aceptar las materias en la siguiente liga: http://academicos.cimav.edu.mx/inscripciones/"
+- elsif @hash[:view].eql? 6
+  = "Se le notifica que su director de tesis ha aprobado su inscripción para el ciclo, puede confirmar en la siguiente liga: http://escolar.cimav.edu.mx/inscripciones/"
+- elsif @hash[:view].eql? 7
+  = "Se le notifica que su director de tesis ha rechazado su propuesta de materias, puede las correcciones necesarias en la siguiente liga: http://escolar.cimav.edu.mx/inscripciones/"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"

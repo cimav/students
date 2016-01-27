@@ -18,11 +18,15 @@ Students::Application.routes.draw do
   match '/avances/subir_archivo' => 'student_advances_file#upload_file'
   match '/avances/:id/file' => 'student_advances_file#file'
   
-  match '/inscripciones/:origin' => 'students#enrollment'
-  match '/inscripcion/:origin' => 'students#enrollment'
+  match '/inscripciones/cimav' => 'students#enrollment'
+  match '/inscripcion/cimav' => 'students#enrollment'
   match '/inscripcion/alumno/:tcs_id' => 'students#endrollment'
+  match '/inscripcion/folio/:folio' => 'students#check_folio'
  
   match '/servicios/:id' => 'home#services'
+
+  match '/alumnos/inscripcion/materias/:id' => 'students#enrollment_courses'
+  match '/alumnos/inscripcion/' => 'students#assign_courses'
 
   resources :student_advances_file_messages, :path=>'/avances/mensajes'
 end

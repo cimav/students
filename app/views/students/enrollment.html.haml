@@ -1,114 +1,119 @@
-:javascript
-  $(document).ready(function() {
-    $("#btn_ok").click(function (){
-      $("#ajax_load").show();
-      var s_id   = $("#s_id").val();
-      var url    = "/inscripcion/alumno/"+s_id;
-      $.ajax({
-        type: 'GET',
-        url: url,
-        success: function(data){
-           if(data.errors.length<=0){
-             $('#btn_ok').prop("disabled",true);
-             $("#emessage").show();
-           }
-           else
-           {
-             alert("Se presentaron los siguientes errores, por favor reportarlo a posgrado: "+data.errors)
-           }
-        },
-        error: function(xhr, textStatus, error){
-           alert("Error al inscribir, intentar de nuevo, si el error persiste comunicarse a posgrado");
-        },
-        complete: function(){
-           $("#ajax_load").hide();
-        }
-      }); 
-
-    });
-  });
-
-- if @student.size>0
-  - s = @student[0]
-  - tcs_access = false
-  - pay_access = false
-  - adv_access = false
-  .inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
-    %br
-      = "Registro de inscripción para el alumno "
-    %b= s.full_name
-    = hidden_field_tag 's_id', s.id
-    - if @without_courses
-      - adv_access = true
-    %br
-      - if @tsp.size>0
-        = "Ya se ha registrado el pago"
-        = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px'
-        = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px', :style=>'display: none'
-        - pay_access = true
-      - else
-        = "No se ha registrado el pago"
-        = image_tag "ok_40px.png", :id=> "img_ok_payment", :width=>'30px', :style=>'display: none'
-        = image_tag "fail_40px.png", :id=> "img_fail_payment" , :width=> '30px'
-    %br
-      - if !@ts2.nil?
-        - if @tcs.size>0 or adv_access
-          = "Las materias ya han sido aprobadas por el asesor"
-          = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px'
-          = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px', :style=>'display: none'
-          - tcs_access = true
-        - else
-          = "Las materias todavía no han sido aprobadas por el asesor"
-          = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px', :style=>'display: none'
-          = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px'
-      - else
-        = "Las materias todavía no han sido aprobadas por el asesor"
-        = image_tag "ok_40px.png", :id=> "img_ok_courses", :width=>'30px', :style=>'display: none'
-        = image_tag "fail_40px.png", :id=> "img_fail_courses" , :width=> '30px'
-  
-  
-  .materias{:style=>'width:700px;margin: 0 auto;'}
-    %table.table-striped
-      - if @tcs.size>0
-        %tr
-          %th= "#"
-          %th= "Materia"
-          %th= "Ciclo Escolar"
-        - @tcs.each_with_index do |tcs,i|
-          %tr
-            %td= "1"
-            %td= tcs.term_course.course.name
-            %td= tcs.term_course.term.name
-      - else
-        %tr
-          %td= "No se han elegido materias"
+.inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
+  - if @student.size>0
+    - @true_tcs = @tcs.where(:status=>6) rescue []
+    - access = false
+    -# if @student[0].status.eql? 1 and @ts.where(:status=>1).size>0
+    - if @tcs.size>0
+      - if @tcs[0].status.eql? 1
+        = image_tag "ok_40px.png", :id=> "img_ok_#{@student[0].id}", :width=>'40px'
+        %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}= "La inscripcion al ciclo #{$NCICLO} se ha completado"
         - access = false
-          
-    %p
-    #button-div
-      #button
-        - if pay_access and tcs_access
-          %button.btn.btn-primary.btn-sm{:id=>'btn_ok'}="Aceptar"
-        - else
-          %button.btn.btn-primary.btn-sm{:id=>'btn_ok',:disabled=>true}="Aceptar"
-        = image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
-        %b#emessage{:style=>'display: none'}="Inscripción realizada exitosamente"
-  
-    %p.small
-      ="Cualquier aclaracion o duda por favor comunicarse al departamento de posgrado antes de aceptar la inscripción"
-      ="atencion.posgrado@cimav.edu.mx"
-      ="o al 4391100"
-    - if @screen.eql? "enrollment"
-      .salir
-        %a{'href' => "/"}= "[Ir a escolar]"
-        %a{'href' => "/logout"}= "[Salir]"
+      -elsif @tcs[0].status.eql? 6
+        - access = true
+      -elsif @tcs[0].status.eql? 7
+        - access = true     
     - else
-      .salir
-      %a{'href' => "/logout"}= "[Salir]"
--else
-  .inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
-    = "No hay ninguna preinscripcion programada"
-    %br
+      - if @student[0].status.eql? 6
+        - access = true
+
+    - if access
+      - @refuse = false
+      - if @ts.where(:status=>6).size>0
+        - @true_ts =  @ts.where(:status=>6)[0]
+        - @disable = true
+        - @display = "inline"
+        - @display_refuse = "none"
+      - elsif @ts.where(:status=>7).size>0
+        - @true_ts =  @ts.where(:status=>7)[0]
+        - @refuse = true
+        - @disable = false
+        - @display = "none"
+        - @display_refuse = "inline"
+      - else
+        - @disable = false
+        - @display = "none"
+        - @display_refuse = "none"
+      = "Inscripcion para el ciclo #{$NCICLO}"
+      %br
+      %b= "Alumno:" 
+      = @student[0].full_name
+      %br
+      %b= "Programa:" 
+      = @student[0].program.name
+      %br
+      %b= "Ingrese su folio de pago (Folio electronico)"
+      - folius = @tsp[0].folio rescue ""
+      - if folius.eql? ""
+        = text_field_tag :folio_field , folius, :disabled=> @disable
+      - else 
+        = text_field_tag :folio_field , folius, :disabled=> true
+      = hidden_field_tag :hidden_id , @student[0].id
+  
+      #button-div
+        #button
+          - if !@disable
+            %button.btn.btn-primary.btn-sm{:id=>'btn_ok',:disable=>@disable}="Aceptar"
+          = image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
+          %br
+
+      #clock-div{:style=>"display: #{@display}"}
+        = image_tag "clock-icon02.png", :id=> "img_clock_#{@student[0].id}", :width=>'45px'
+        %b#emessage{:style=>"font-weight: bold;"}="En espera de la respuesta del director"
+        %br
+
+      #refused-div{:style=>"display: #{@display_refuse}"}
+        %br
+        = image_tag "fail_40px.png", :id=> "img_fail_#{@student[0].id}", :style=>"display: #{@display_refuse}", :width=>'40px'
+        %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}="El director ha rechazado las materias por las siguientes razones:"
+        %br
+        
+        - if @true_ts
+          - TermStudentMessage.where(:term_student_id=>@true_ts.id).each do |tsm|
+            = tsm.message
+            %br
+
+      - if @display_refuse.eql? "inline"
+        .materias{:style=>'width:550px;'}
+          %br
+          %table.table-striped{:border=>1}
+            - counter = 1 
+            - if @true_tcs.size>0
+              %tr 
+                %th{:style=>"font-weight: bold;"}= "#" 
+                %th{:style=>"font-weight: bold;"}= "Materia"
+                %th{:style=>"font-weight: bold;"}= "Programa"
+              - @tcs.each_with_index do |tcs,i|
+                %tr 
+                  %td{:style=>"vertical-align: top;"}= counter
+                  %td 
+                    %b{:style=>"font-weight: bold;"}= tcs.term_course.course.name
+                    %br 
+                    %b{:style=>"font-weight: bold; color:#999; font-size:12px;"}= tcs.term_course.staff.full_name rescue "Docente sin asignar"
+                  %td= tcs.term_course.course.program.name
+                  - counter = counter + 1 
+            - else
+              %tr 
+                %td{:colspan=>3}= "No se han elegido materias."
+   
+      %br
+      %p.small
+        ="Cualquier aclaracion o duda por favor comunicarse al departamento de posgrado antes de aceptar la inscripción"
+        ="atencion.posgrado@cimav.edu.mx"
+        ="o al 4391100"
+    -else
+      = "No hay ninguna preinscripcion programada"
+
+  %br
+  .salir
     %a{'href' => "/"}= "[Ir a escolar]"
-    %br
+    %a{'href' => "/kardex/#{current_user.id}"}= "[Ir a kardex]"
     %a{'href' => "/logout"}= "[Salir]"
+
+#new-enrollment-dialog
+  #courses
+    = image_tag "ajax-load2.gif", :id=> "img-loader",:align=>:center,:valign=>:center
+  #buttons
+    = submit_tag "Enviar materias", :id=>"nedSendButton",:align=>:center,:disabled=>:disabled
+    = button_tag "Cerrar", :disable_with => "Enviando..." , :id=>"nedCloseButton", :class=>"message-button"
+#help-dialog
+

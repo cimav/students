@@ -1,0 +1,129 @@
+- if @e_term.nil?
+  = "No hay ciclos abiertos para inscripción para ese programa, por favor de comunicarse al departamento de posgrado"
+  = hidden_field_tag 'hstatus', 0
+- else
+  %h2="Ciclo: #{@e_term.name}"
+  %h3="Materias para #{@e_term.program.name}:"
+  = form_for(@student, :remote=> true, :url => { :action => "assign_courses" }, :html => {:id => 'assign-courses-form'}) do |f|
+    = hidden_field_tag 'hfolio', @hfolio
+    = hidden_field_tag 'eterm', @e_term.id
+    = hidden_field_tag 's_id', @student.id
+
+    - if @without_courses
+      = check_box_tag "chk_none", 1, false, :name=>"chk_none"
+      = "Pre-inscribir sin materias (no se enviara ninguna materia)"
+    - counter = 1
+    - if @tcs.blank?
+      %p= "No hay grupos"
+    - else
+      %br
+      %table.formatted-table
+        %tbody
+          %tr.header
+            %th=""
+            %th="Materia"
+            %th="Ciclo"
+        
+        - a_op = Array.new
+        - rcounter = @optativas.size
+        - @cs.each do |c|
+          - if (c.code.empty?)&&(c.name.include? "Optativa")
+            - if rcounter > 0
+              - rcounter = rcounter - 1
+            - else
+              - a_op << c.id
+        - @tcs.each do |tc|
+          - access = false
+          %tr
+          - if !tc.course.description.eql? "[AI]"
+            - access = true
+          - elsif tc.course.description.eql? "[AI]"
+            - if tc.staff_id.eql? @student.supervisor.to_i
+              - access = true
+
+          - if access
+            - if @student.studies_plan_id.eql? 15 and tc.course.name.include? "Temas Selectos"
+              %td{:colspan=>3}
+                %span{:style=>"font-weight: bold;font-size:12px;color:#000000;"}= "Nota: Debes elegir una Optativa de Maestria en Ciencia de Materiales como Tema Selecto"
+            - else
+              - if a_op.include?(tc.course.id)
+                %td= ""
+              - else
+                %td= check_box_tag "chk_#{counter}", tc.id, false, :name=>"tcourses[]"
+              %td
+                %span{:style=>"font-weight: bold; font-size:12px;"}= "#{tc.course.name} [#{tc.term.name}]"
+                %br
+                %span{:style=>"font-weight: bold;font-size:12px;color:#757575;"}= tc.staff.full_name rescue "Docente sin asignar"
+                -# if tc.course.description.eql? "[AI]"
+              %td
+                %span{:Style=>"font-size:12px;"}= "#{tc.course.term}"
+              - counter = counter + 1
+      
+          %p
+
+    %p
+      = "Las optativas se seleccionan de la lista siguiente:"
+
+    %br
+    %h3="Optativas para #{@e_term.program.name}:"
+    %table.formatted-table
+      %tbody
+        %tr.header
+          %th=""
+          %th="Materia"
+          %th="Ciclo"
+      - @optativasf.each do |tc|
+        %tr
+          %td= check_box_tag "chk_#{counter}", tc.id, false, :name=>"tcourses[]"
+          %td
+            %span{:style=>"font-weight: bold; font-size:12px;"}= "#{tc.course.name} [#{tc.term.name}]"
+            %br
+            %span{:style=>"font-weight: bold;font-size:12px;color:#757575;"}= tc.staff.full_name rescue "Docente sin asignar"
+          %td
+            %span{:Style=>"font-size:12px;"}= "Optativa"
+
+    - if @tcs2.blank?
+      %br
+      %p= "No hay grupos disponibles para el resto de los programas"
+    - else
+      - pp_name = ""
+      %h3="Materias para otros programas"
+      %table.formatted-table
+        %tbody
+          %tr.header
+            %th=""
+            %th="Materia"
+            %th="Programa"
+          - @tcs2.each do |tc|
+            %tr
+              %td= check_box_tag "chk_#{counter}", tc.id, false, :name=>"tcourses[]"
+              %td
+                %span{:style=>"font-weight: bold; font-size:12px;"}
+                  = "#{tc.course.name}"
+                  - if tc.course.term.eql? 99
+                    = "(Optativa)"
+                  = "[#{tc.term.name}]"
+                %br
+                %span{:style=>"font-weight: bold;font-size:12px;color:#757575;"}= tc.staff.full_name rescue "Docente sin asignar"
+              %td
+                %span{:Style=>"font-size:12px;"}= "#{tc.term.program.name}"
+            - counter = counter + 1
+
+  = hidden_field_tag 'hstatus', 1
+
+:javascript
+  $("#chk_none").click(function(){
+     checks      = $("input[name='tcourses[]']:checked").length;
+     if(checks>0){
+     var yes = confirm("Se borraran las materias que seleccionaste")
+       if(yes){
+         $("input[name='tcourses[]']:checked").removeAttr('checked');
+       }else{
+         $(this).removeAttr('checked');
+       }
+     }
+  });
+
+  $("input[name='tcourses[]']").click(function(){
+    $("#chk_none").removeAttr('checked');
+  });

@@ -1,10 +1,13 @@
+# coding: utf-8
 class StudentsController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
+  $CICLO = "2015-2"
+  $NCICLO = "2016-1"
 
   def kardex
     @screen="kardex"
-    @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(params[:id])
+    @student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(current_user.id)
 
     respond_with do |format|
       format.html do
@@ -192,20 +195,18 @@ class StudentsController < ApplicationController
   
   def enrollment
     #@student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
-    @student  = Student.where(:status=>6,:id=>current_user.id)
-    @origin   = params[:origin]
+    #@student  = Student.where(:status=>[6,7],:id=>current_user.id)
+    @student   = Student.where(:status=>[1,6,7],:id=>current_user.id)
+    campus_short_name = @student[0].campus.short_name
+    terms     = Term.where("name like '%#{$NCICLO}%' and name like '%#{campus_short_name}%' and program_id=?",@student[0].program_id).map{|i| i.id} rescue []
+    @ts       = TermStudent.joins(:term).where(:student_id=>@student[0].id,:term_id=>terms) rescue []
+
+    # @ts.joins(:term).where(:terms=>{:name=>'2016-1 Chihuahua'})
+
     if @student.size>0
-      @ts = TermStudent.where(:student_id=>@student[0].id,:status=>6)
-      if @ts.size >0 
-        @ts2 = @ts[0]
-        @ts_id = @ts[0].id
-      else
-        @ts2 = nil
-        @ts_id = 0
-      end
-    
-      @tcs = TermCourseStudent.where(:term_student_id=>@ts_id,:status=>6)
-      @tsp = TermStudentPayment.where(:term_student_id=>@ts_id,:status=>3)
+      @ts_id = @ts[0].id rescue 0
+      @tcs = TermCourseStudent.where(:term_student_id=>@ts_id,:status=>[1,6,7])
+      @tsp = TermStudentPayment.where(:term_student_id=>@ts_id,:status=>[3,6,7])
     
       @level = @student[0].program.level
       @without_courses = false
@@ -222,15 +223,304 @@ class StudentsController < ApplicationController
       end
     end
 
-    if @origin.eql? "gobmx"
-      @include_js =  ["gobmx/jquery-1.10.2.min","gobmx/bootstrap"]
-      render :layout=>'gobmx'
-    else #cimav
-      @include_js =  ["gobmx/jquery-1.10.2.min","gobmx/bootstrap"]
-      @screen="enrollment"
-      render :layout=>'gobmx'
+    @include_js =  ["jquery","jquery-ui","jquery_ujs","enrollments"]
+    @screen="enrollment"
+    render :layout=>'gobmx'
+  end
+
+  def enrollment_courses
+    @student   = Student.find(current_user.id)
+    @hfolio    = params[:folio_field]
+    if @hfolio.blank?
+      render :layout=>false
+      return
+    end
+    ## get last term tha
+    campus_short_name = @student.campus.short_name
+    
+    #last_term  = Term.joins(:term_students=>:student).where(:students=>{:id=>@student.id}).order("terms.end_date desc").limit(1)[0]
+    ## get enrollment term
+    #@e_term    = Term.where("program_id=#{@student.program.id} AND start_date  > '#{last_term.end_date}' AND name like '%#{last_term.name.split(" ")[1]}%'").last rescue 
+    @e_term = Term.where("name like '%#{$NCICLO}%' and name like '%#{campus_short_name}%' and program_id=? and status=1",@student.program_id).last 
+    
+    if @e_term
+      ## Obtenemos las materias que ya lleva acreditadas el alumno
+      @stc = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND term_course_students.status=?",70,1)
+      @scourses = @stc.map{|i| i.course_id}
+  
+      ## Nos traemos el plan de estudios
+      @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99").order(:term)
+      @optativas_requeridas = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99 AND courses.name like '%Optativa%'").size
+      @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term=?",70,99)
+      @alternativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term!=? AND courses.program_id!=?",70,99,@student.program.id)
+      @optativas_total = @optativas_cursadas.size + @alternativas_cursadas.size
+      @materias_faltantes = []
+
+      if @student.studies_plan_id.eql? 15
+        @condemned = nil
+        @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id]}
+        @plan_estudios.where("name like '%Temas Selectos%'").each do |te_se|
+          if !@scourses.include? te_se.id
+            @optativas_cursadas_map.each do |oc|
+              if oc[1].eql? 1 ## la optativa debe ser de MCM
+                @scourses << te_se.id
+                @optativas_total = @optativas_total - 1 
+                @condemned = oc
+              else
+                @condemned = nil
+              end  ## if oc
+            end  ## do map
+            @optativas_cursadas_map.delete(@condemned)
+          end ## if scourses
+        end ## do te_se
+      end ## if
+
+      @plan_estudios.each do |c| 
+         logger.debug "PLAN: #{c.name}" 
+         if !@scourses.include? c.id
+           if c.name.include? "Optativa"
+             if @optativas_total>0
+               @optativas_total = @optativas_total - 1 
+             else
+               @materias_faltantes << c
+             end 
+           else
+             @materias_faltantes << c
+           end 
+         end 
+      end 
+
+      @materias_faltantes.each do |mf|
+        logger.debug "FALTAN: #{mf.name}"
+        @maxterm = mf.term
+      end
+  
+      if @materias_faltantes.size>0
+        logger.debug "PRIMER REGISTRO:  #{@materias_faltantes[0].name}"
+        @maxterm = @materias_faltantes[0].term - 1
+      else
+        @maxterm = @plan_estudios.maximum(:term)
+      end
+      
+      ## Almacenamos en un arreglo los ciclos
+      @smaxterm = [@maxterm,@maxterm+1,99]
+  
+      ## Nos traemos los cursos que no han sido aprobados, es decir, que no estan en scourses y >>
+      ## los que estan en el semestre al que pertence el alumno mas uno.
+      # tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).where("terms.id=? AND courses.id not in (?) AND courses.term in (?)",@e_term.id,scourses,smaxterm).order("courses.program_id") 
+      @tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).
+      where("terms.id=? AND courses.id not in (?) AND courses.term<=?",@e_term.id,@scourses,@maxterm+1).order("courses.program_id")    # agregamos los id de los cursos en el mapa de scourses
+      @scourses += @tcs.map {|i| i.course_id}
+  
+      ## Obtenemos todos los cursos para el resto de los programas
+      if @student.program.level.to_i.eql? 2
+        @levels = [1,2]
+      else
+        @levels = 1
+      end
+  
+      @tcs2 = TermCourse.joins(:term=>:program).joins(:course).where(:programs=>{:level=>@levels},:terms=>{:status=>1}).where("courses.id not in (?) AND courses.program_id !=?",@scourses,@student.program.id).order("courses.program_id")
+  
+      ## OPTATIVAS
+      ## Obtenemos de nuevo los cursos acreditados
+      @scourses = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=?",70).map {|i| i.course_id}
+      # Obtenemos las materias del plan de estudios que faltan
+      @cs = Course.where("program_id=? AND term<=? AND id not in (?)",@student.program.id,@maxterm+1,@scourses)
+      # obtenemos la cantidad de optativas que ya han sido aprobadas
+      @optativas = TermCourse.joins(:term_course_student=>:term_student).joins(:course).where("term_students.student_id=? AND courses.program_id=? AND term_course_students.grade>=? AND courses.term=?",@student.id,@student.program.id,70,99)
+      @soptativas = @optativas.map{|i| i.course_id}
+      # ahora las optativas que faltan para el programa
+      @soptativas << 0
+      @optativasf = TermCourse.joins(:course).where("courses.program_id=? AND courses.id not in (?) AND courses.term=? AND term_id=?",@student.program.id,@soptativas,99,@e_term.id)
+  
+      ## asisgnando permisos para inscribir sin materias
+      @without_courses = false
+      if @student.program.level.to_i.eql? 2 ## los de doctorado
+        @without_courses = true
+      elsif @student.program.level.to_i.eql? 1 ## los de maestria con una materia de tesis calificada
+        t = TermCourse.joins(:term_course_student=>:term_student).joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.notes='[AI]'",70)
+        if t.size>0
+          @without_courses = true
+        end
+      end
+    end
+    respond_to do |format|
+      format.html do
+        render :layout=> false
+      end
     end
   end
+
+  def assign_courses 
+    json = {}
+    @message  = ""
+    @errors   = []
+    @none  = params[:chk_none]
+    @student  = Student.find(current_user.id)
+    terms     = Term.where("name like '%#{$NCICLO}%' and program_id=?",@student.program_id).map{|i| i.id} rescue []
+    @ts       = TermStudent.where(:student_id=>@student.id,:term_id=>terms) rescue []
+    @ts_access   = false
+    @payment_access = false
+    
+    if @ts.size>0
+      if @ts[0].status.eql? 7
+        @ts[0].status     = 6
+        @ts[0].save
+        TermCourseStudent.where(:term_student_id=>@ts[0].id,:status=>6).delete_all
+        @ts_access = true
+        @ts = @ts[0]
+        @payment_access = false
+      #else
+      #  @errors  << 8
+      #  @message = "Ya existe un registro de ciclo"
+      end
+    else
+      ## primero pre-inscribimos al alumno al ciclo
+      @payment_access = true
+      @ts = TermStudent.new
+      @ts.term_id    = params[:eterm]
+      @ts.student_id = params[:s_id]
+      @ts.status     = 6
+      begin
+        @ts.save!
+        @ts_access = true
+      rescue ActiveRecord::RecordInvalid
+        @ts_access = true
+        logger.info "Repeticion-ts: #{@ts.student_id}" 
+      rescue 
+        @ts_access = false
+        @errors  << 2
+        @message= "No se pudo inscribir al ciclo"
+      rescue Exception
+        @ts_access = false
+        @errors  << 3
+        @message= "No se pudo inscribir al ciclo"
+      end
+    end
+
+    @tcs_access = false
+   
+    if @ts_access
+      if @none.nil?
+      ## Ahora inscribimos a los cursos
+        params[:tcourses].each do |tc|
+          #@errors << tc.to_s
+          @tcs = TermCourseStudent.new
+          @tcs.term_course_id  = tc
+          @tcs.term_student_id = @ts.id
+          @tcs.status          = 6
+          begin
+            @tcs.save!
+            @tcs_access = true
+          rescue ActiveRecord::RecordInvalid
+            @tcs_access = true
+            logger.info "Repeticion-tcs: #{@ts.student_id} #{@tcs.term_course_id}" 
+          rescue 
+            @message= "No se pudo inscribir a las materias"
+            @errors << 5
+            @tcs_access = false
+          rescue Exception
+            @message= "No se pudo inscribir a las materias"
+            @errors << 6
+            @tcs_access = false
+          end
+        end#params
+
+        if @tcs_access and @payment_access
+            ## capturamos el pago
+            @tsp = TermStudentPayment.new
+            @tsp.term_student_id = @ts.id
+            @tsp.status = 6
+            @tsp.folio  = params[:hfolio]
+            if @tsp.save
+              ## Enviamos mail al asesor (ponemos en la cola de correos el mensaje)
+              s = Student.find(params[:s_id])
+              staff = Staff.find(s.supervisor)
+              #to = staff.email
+              to = "enrique.turcott@cimav.edu.mx"
+              content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email_cimav}\",:view=>5}"
+              subject = "Estan listas materias para inscripción de #{s.full_name}"
+              mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
+              mail.save
+            else
+              @message= "No se pudo capturar el pago"
+              @errors << 7
+            end
+        end
+      else
+        ## capturamos el pago
+        @tsp = TermStudentPayment.new
+        @tsp.term_student_id = @ts.id
+        @tsp.status = 6
+        @tsp.folio  = params[:hfolio]
+        if @tsp.save
+          ## Enviamos mail al asesor (ponemos en la cola de correos el mensaje)
+          s = Student.find(params[:s_id])
+          staff = Staff.find(s.supervisor)
+          #to = staff.email
+          to = "enrique.turcott@cimav.edu.mx"
+          content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email_cimav}\",:view=>5}"
+          subject = "Estan listas materias para inscripción de #{s.full_name}"
+          mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
+          mail.save
+        else
+          @message= "No se pudo capturar el pago"
+          @errors << 7
+        end
+      end#if none
+    end#if ts_access
+
+    respond_with do |format|
+      format.html do
+        if request.xhr?
+          json[:message] = @message
+          json[:errors]  = @errors
+          json[:s_id]    = params[:s_id]
+          render :json => json
+        else
+          render :layout => false
+        end
+      end
+    end
+  end
+
+  def check_folio
+    json = {}
+    @errors = []
+    @folio = params[:folio]
+    @student  = Student.find(current_user.id)
+    terms     = Term.where("name like '%#{$NCICLO}%' and program_id=?",@student.program_id).map{|i| i.id} rescue []
+    @ts       = TermStudent.where(:student_id=>@student.id,:term_id=>terms) rescue []
+    validate  = true
+
+    if @ts.size>0
+      if @ts[0].status.eql? 7
+        validate = false
+      end
+    end
+
+    if validate
+      if !@folio.size.eql? 20
+        @errors << "el folio debe ser de 20 caracteres"
+      end
+
+      if !(@folio =~ /\A[-+]?\d+\z/)
+        @errors << "el folio debe ser numerico"
+      end
+
+      if @errors.size.eql? 0
+        tsp = TermStudentPayment.where(:folio=>@folio)
+    
+        if !tsp.size.eql? 0 
+          @errors << "Ya existe un registro con ese folio"
+        end
+      end
+    end
+
+    json[:errors]= @errors
+    render :json => json
+  end
+
 
   def endrollment
     json = {}
