@@ -436,8 +436,7 @@ class StudentsController < ApplicationController
               ## Enviamos mail al asesor (ponemos en la cola de correos el mensaje)
               s = Student.find(params[:s_id])
               staff = Staff.find(s.supervisor)
-              #to = staff.email
-              to = "enrique.turcott@cimav.edu.mx"
+              to = staff.email
               content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email_cimav}\",:view=>5}"
               subject = "Estan listas materias para inscripción de #{s.full_name}"
               mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
@@ -457,8 +456,7 @@ class StudentsController < ApplicationController
           ## Enviamos mail al asesor (ponemos en la cola de correos el mensaje)
           s = Student.find(params[:s_id])
           staff = Staff.find(s.supervisor)
-          #to = staff.email
-          to = "enrique.turcott@cimav.edu.mx"
+          to = staff.email
           content = "{:full_name=>\"#{s.full_name}\",:email=>\"#{s.email_cimav}\",:view=>5}"
           subject = "Estan listas materias para inscripción de #{s.full_name}"
           mail    = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>to,:subject=>subject,:content=>content,:status=>0})
