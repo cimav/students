@@ -7,11 +7,26 @@
       - if @tcs[0].status.eql? 1
         = image_tag "ok_40px.png", :id=> "img_ok_#{@student[0].id}", :width=>'40px'
         %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}= "La inscripcion al ciclo #{$NCICLO} se ha completado"
-        - access = false
+        %br
+          .salir
+            %a{'href' => "/"}= "[Ir a escolar]"
+            %a{'href' => "/kardex/#{current_user.id}"}= "[Ir a kardex]"
+            %a{'href' => "/logout"}= "[Salir]"
+        - return @haml_buffer.buffer
       -elsif @tcs[0].status.eql? 6
         - access = true
       -elsif @tcs[0].status.eql? 7
-        - access = true     
+        - access = true
+    - elsif @ts.size > 0
+      - if @ts[0].status.eql? 1
+        = image_tag "ok_40px.png", :id=> "img_ok_#{@student[0].id}", :width=>'40px'
+        %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}= "La inscripcion al ciclo #{$NCICLO} se ha completado"
+        %br
+          .salir
+            %a{'href' => "/"}= "[Ir a escolar]"
+            %a{'href' => "/kardex/#{current_user.id}"}= "[Ir a kardex]"
+            %a{'href' => "/logout"}= "[Salir]"
+        - return @haml_buffer.buffer
     - else
       - if @student[0].status.eql? 6
         - access = true
@@ -35,20 +50,20 @@
         - @display_refuse = "none"
       = "Inscripcion para el ciclo #{$NCICLO}"
       %br
-      %b= "Alumno:" 
+      %b= "Alumno:"
       = @student[0].full_name
       %br
-      %b= "Programa:" 
+      %b= "Programa:"
       = @student[0].program.name
       %br
       %b= "Ingrese su folio de pago (Folio electronico)"
       - folius = @tsp[0].folio rescue ""
       - if folius.eql? ""
         = text_field_tag :folio_field , folius, :disabled=> @disable
-      - else 
+      - else
         = text_field_tag :folio_field , folius, :disabled=> true
       = hidden_field_tag :hidden_id , @student[0].id
-  
+
       #button-div
         #button
           - if !@disable
@@ -66,7 +81,7 @@
         = image_tag "fail_40px.png", :id=> "img_fail_#{@student[0].id}", :style=>"display: #{@display_refuse}", :width=>'40px'
         %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}="El director ha rechazado las materias por las siguientes razones:"
         %br
-        
+
         - if @true_ts
           - TermStudentMessage.where(:term_student_id=>@true_ts.id).each do |tsm|
             = tsm.message
@@ -76,25 +91,25 @@
         .materias{:style=>'width:550px;'}
           %br
           %table.table-striped{:border=>1}
-            - counter = 1 
+            - counter = 1
             - if @true_tcs.size>0
-              %tr 
-                %th{:style=>"font-weight: bold;"}= "#" 
+              %tr
+                %th{:style=>"font-weight: bold;"}= "#"
                 %th{:style=>"font-weight: bold;"}= "Materia"
                 %th{:style=>"font-weight: bold;"}= "Programa"
               - @tcs.each_with_index do |tcs,i|
-                %tr 
+                %tr
                   %td{:style=>"vertical-align: top;"}= counter
-                  %td 
+                  %td
                     %b{:style=>"font-weight: bold;"}= tcs.term_course.course.name
-                    %br 
+                    %br
                     %b{:style=>"font-weight: bold; color:#999; font-size:12px;"}= tcs.term_course.staff.full_name rescue "Docente sin asignar"
                   %td= tcs.term_course.course.program.name
-                  - counter = counter + 1 
+                  - counter = counter + 1
             - else
-              %tr 
+              %tr
                 %td{:colspan=>3}= "No se han elegido materias."
-   
+
       %br
       %p.small
         ="Cualquier aclaracion o duda por favor comunicarse al departamento de posgrado antes de aceptar la inscripción"
@@ -116,4 +131,3 @@
     = submit_tag "Enviar materias", :id=>"nedSendButton",:align=>:center,:disabled=>:disabled
     = button_tag "Cerrar", :disable_with => "Enviando..." , :id=>"nedCloseButton", :class=>"message-button"
 #help-dialog
-

@@ -23,7 +23,7 @@
             %th=""
             %th="Materia"
             %th="Ciclo"
-        
+
         - a_op = Array.new
         - rcounter = @optativas.size
         - @cs.each do |c|
@@ -44,7 +44,7 @@
           - if access
             - if @student.studies_plan_id.eql? 15 and tc.course.name.include? "Temas Selectos"
               %td{:colspan=>3}
-                %span{:style=>"font-weight: bold;font-size:12px;color:#000000;"}= "Nota: Debes elegir una Optativa de Maestria en Ciencia de Materiales como Tema Selecto"
+                %span{:style=>"font-weight: bold;font-size:12px;color:#000000;"}= "Nota: Debes elegir una materia como Tema Selecto"
             - else
               - if a_op.include?(tc.course.id)
                 %td= ""
@@ -58,7 +58,7 @@
               %td
                 %span{:Style=>"font-size:12px;"}= "#{tc.course.term}"
               - counter = counter + 1
-      
+
           %p
 
     %p
