@@ -30,7 +30,7 @@ class StudentsController < ApplicationController
   def term_grades
     @screen="term_grades"
     @is_pdf = false
-    
+
     @student = Student.joins(:term_students=>:term).includes(:program, :advance).find(current_user.id)
     @terms     = @student.term_students.collect {|i| [i.term.name, i.term.id]}.sort
 
@@ -39,11 +39,11 @@ class StudentsController < ApplicationController
       @term_id   = @terms.last[1]
     else
       @term_id = params[:term_id]
-    end 
-    
+    end
+
     @tindex     = @terms.index(@terms.rassoc(@term_id.to_i))
     @term       = Term.find(@term_id)
- 
+
     if @tindex!= 0
       @p_term     = Term.find(@terms[@tindex - 1][1])
       @p_advances = Advance.where("student_id=? AND advance_date between ? AND ?",@student.id,@p_term.start_date,@p_term.end_date).last
@@ -60,7 +60,7 @@ class StudentsController < ApplicationController
     respond_with do |format|
       format.html do
         #render :layout => false
-      end 
+      end
       format.pdf do
         institution = Institution.find(1)
         @logo = institution.image_url(:medium).to_s
@@ -71,13 +71,13 @@ class StudentsController < ApplicationController
         filename = "boleta-#{@ts.student_id}-#{@ts.term_id}.pdf"
         send_data(kit.to_pdf, :filename => filename, :type => 'application/pdf')
         return # to avoid double render call
-      end 
-    end 
-  end 
+      end
+    end
+  end
 
   def get_adv_avg(a)
-    grades = 0 
-    sum    = 0 
+    grades = 0
+    sum    = 0
     if !a.tutor1.nil?
       if !a.grade1.nil?
          sum = sum + a.grade1
@@ -120,7 +120,7 @@ class StudentsController < ApplicationController
     @screen="schedule_table"
     @is_pdf = false
     @student = Student.find(params[:id])
-    
+
     if params[:term_id].to_i == 0
       @terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
       if !@terms.blank?
@@ -128,41 +128,41 @@ class StudentsController < ApplicationController
       end
     else
       @term_id = params[:term_id]
-    end 
+    end
 
     @ts = TermStudent.where(:student_id => params[:id], :term_id => @term_id).first
     @schedule = Hash.new
-    (4..22).each do |i| 
+    (4..22).each do |i|
       @schedule[i] = Array.new
-      (1..7).each do |j| 
+      (1..7).each do |j|
         @schedule[i][j] = Array.new
-      end 
-    end 
-    n = 0 
+      end
+    end
+    n = 0
     courses = Hash.new
     @min_hour = 24
-    @max_hour = 1 
-    @ts.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |c| 
+    @max_hour = 1
+    @ts.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |c|
       c.term_course.term_course_schedules.where(:status => TermCourseSchedule::ACTIVE).each do |session_item|
         hstart = session_item.start_hour.hour
-        hend = session_item.end_hour.hour - 1 
-        (hstart..hend).each do |h| 
-           if courses[c.term_course.course.id].nil? 
+        hend = session_item.end_hour.hour - 1
+        (hstart..hend).each do |h|
+           if courses[c.term_course.course.id].nil?
              n += 1
-             courses[c.term_course.course.id] = n 
-           end 
+             courses[c.term_course.course.id] = n
+           end
            comments = ''
            if session_item.start_date != @ts.term.start_date
              comments += "Inicia: #{l session_item.start_date, :format => :long}\n"
-           end 
+           end
            if session_item.end_date != @ts.term.end_date
              comments += "Finaliza: #{l session_item.end_date, :format => :long}"
-           end 
-    
+           end
+
            staff_name = session_item.staff.full_name rescue 'Sin docente'
 
-           details = { 
-             "name" => c.term_course.course.name, 
+           details = {
+             "name" => c.term_course.course.name,
              "staff_name" => staff_name,
              "classroom"  => session_item.classroom.name,
              "comments" => comments,
@@ -192,7 +192,7 @@ class StudentsController < ApplicationController
       end
     end
   end
-  
+
   def enrollment
     #@student  = Student.includes(:program, :thesis, :contact, :scholarship, :advance).find(session[:user_id])
     #@student  = Student.where(:status=>[6,7],:id=>current_user.id)
@@ -207,19 +207,19 @@ class StudentsController < ApplicationController
       @ts_id = @ts[0].id rescue 0
       @tcs = TermCourseStudent.where(:term_student_id=>@ts_id,:status=>[1,6,7])
       @tsp = TermStudentPayment.where(:term_student_id=>@ts_id,:status=>[3,6,7])
-    
+
       @level = @student[0].program.level
       @without_courses = false
       if @level.eql? "2" and @tcs.size.eql? 0  ## para doctorado
         @adv = Advance.where(:student_id=>@student[0].id)
-        if @adv.size>=6
+        if @adv.size>=5
           @without_courses = true
         end
       elsif @level.eql? "1" and @tcs.size.eql? 0  ## para maestria
         t = TermCourse.joins(:term_course_students=>:term_student).joins(:course).where(:term_students=>{:student_id=>@student[0].id}).where("term_course_students.grade>=? AND courses.notes='[AI]'",70)
         if t.size>0
           @without_courses = true
-        end 
+        end
       end
     end
 
@@ -237,17 +237,17 @@ class StudentsController < ApplicationController
     end
     ## get last term tha
     campus_short_name = @student.campus.short_name
-    
+
     #last_term  = Term.joins(:term_students=>:student).where(:students=>{:id=>@student.id}).order("terms.end_date desc").limit(1)[0]
     ## get enrollment term
-    #@e_term    = Term.where("program_id=#{@student.program.id} AND start_date  > '#{last_term.end_date}' AND name like '%#{last_term.name.split(" ")[1]}%'").last rescue 
-    @e_term = Term.where("name like '%#{$NCICLO}%' and name like '%#{campus_short_name}%' and program_id=? and status=1",@student.program_id).last 
-    
+    #@e_term    = Term.where("program_id=#{@student.program.id} AND start_date  > '#{last_term.end_date}' AND name like '%#{last_term.name.split(" ")[1]}%'").last rescue
+    @e_term = Term.where("name like '%#{$NCICLO}%' and name like '%#{campus_short_name}%' and program_id=? and status=1",@student.program_id).last
+
     if @e_term
       ## Obtenemos las materias que ya lleva acreditadas el alumno
       @stc = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND term_course_students.status=?",70,1)
       @scourses = @stc.map{|i| i.course_id}
-  
+
       ## Nos traemos el plan de estudios
       @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99").order(:term)
       @optativas_requeridas = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99 AND courses.name like '%Optativa%'").size
@@ -264,7 +264,7 @@ class StudentsController < ApplicationController
             @optativas_cursadas_map.each do |oc|
               if oc[1].eql? 1 ## la optativa debe ser de MCM
                 @scourses << te_se.id
-                @optativas_total = @optativas_total - 1 
+                @optativas_total = @optativas_total - 1
                 @condemned = oc
               else
                 @condemned = nil
@@ -275,52 +275,51 @@ class StudentsController < ApplicationController
         end ## do te_se
       end ## if
 
-      @plan_estudios.each do |c| 
-         logger.debug "PLAN: #{c.name}" 
+      @plan_estudios.each do |c|
+         logger.debug "PLAN: #{c.name}"
          if !@scourses.include? c.id
            if c.name.include? "Optativa"
              if @optativas_total>0
-               @optativas_total = @optativas_total - 1 
+               @optativas_total = @optativas_total - 1
              else
                @materias_faltantes << c
-             end 
+             end
            else
              @materias_faltantes << c
-           end 
-         end 
-      end 
+           end
+         end
+      end
 
       @materias_faltantes.each do |mf|
         logger.debug "FALTAN: #{mf.name}"
         @maxterm = mf.term
       end
-  
+
       if @materias_faltantes.size>0
         logger.debug "PRIMER REGISTRO:  #{@materias_faltantes[0].name}"
         @maxterm = @materias_faltantes[0].term - 1
       else
         @maxterm = @plan_estudios.maximum(:term)
       end
-      
+
       ## Almacenamos en un arreglo los ciclos
       @smaxterm = [@maxterm,@maxterm+1,99]
-  
       ## Nos traemos los cursos que no han sido aprobados, es decir, que no estan en scourses y >>
       ## los que estan en el semestre al que pertence el alumno mas uno.
-      # tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).where("terms.id=? AND courses.id not in (?) AND courses.term in (?)",@e_term.id,scourses,smaxterm).order("courses.program_id") 
+      # tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).where("terms.id=? AND courses.id not in (?) AND courses.term in (?)",@e_term.id,scourses,smaxterm).order("courses.program_id")
       @tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).
       where("terms.id=? AND courses.id not in (?) AND courses.term<=?",@e_term.id,@scourses,@maxterm+1).order("courses.program_id")    # agregamos los id de los cursos en el mapa de scourses
       @scourses += @tcs.map {|i| i.course_id}
-  
+
       ## Obtenemos todos los cursos para el resto de los programas
       if @student.program.level.to_i.eql? 2
         @levels = [1,2]
       else
         @levels = 1
       end
-  
+
       @tcs2 = TermCourse.joins(:term=>:program).joins(:course).where(:programs=>{:level=>@levels},:terms=>{:status=>1}).where("courses.id not in (?) AND courses.program_id !=?",@scourses,@student.program.id).order("courses.program_id")
-  
+
       ## OPTATIVAS
       ## Obtenemos de nuevo los cursos acreditados
       @scourses = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=?",70).map {|i| i.course_id}
@@ -332,7 +331,7 @@ class StudentsController < ApplicationController
       # ahora las optativas que faltan para el programa
       @soptativas << 0
       @optativasf = TermCourse.joins(:course).where("courses.program_id=? AND courses.id not in (?) AND courses.term=? AND term_id=?",@student.program.id,@soptativas,99,@e_term.id)
-  
+
       ## asisgnando permisos para inscribir sin materias
       @without_courses = false
       if @student.program.level.to_i.eql? 2 ## los de doctorado
@@ -351,7 +350,7 @@ class StudentsController < ApplicationController
     end
   end
 
-  def assign_courses 
+  def assign_courses
     json = {}
     @message  = ""
     @errors   = []
@@ -361,7 +360,7 @@ class StudentsController < ApplicationController
     @ts       = TermStudent.where(:student_id=>@student.id,:term_id=>terms) rescue []
     @ts_access   = false
     @payment_access = false
-    
+
     if @ts.size>0
       if @ts[0].status.eql? 7
         @ts[0].status     = 6
@@ -386,8 +385,8 @@ class StudentsController < ApplicationController
         @ts_access = true
       rescue ActiveRecord::RecordInvalid
         @ts_access = true
-        logger.info "Repeticion-ts: #{@ts.student_id}" 
-      rescue 
+        logger.info "Repeticion-ts: #{@ts.student_id}"
+      rescue
         @ts_access = false
         @errors  << 2
         @message= "No se pudo inscribir al ciclo"
@@ -399,7 +398,7 @@ class StudentsController < ApplicationController
     end
 
     @tcs_access = false
-   
+
     if @ts_access
       if @none.nil?
       ## Ahora inscribimos a los cursos
@@ -414,8 +413,8 @@ class StudentsController < ApplicationController
             @tcs_access = true
           rescue ActiveRecord::RecordInvalid
             @tcs_access = true
-            logger.info "Repeticion-tcs: #{@ts.student_id} #{@tcs.term_course_id}" 
-          rescue 
+            logger.info "Repeticion-tcs: #{@ts.student_id} #{@tcs.term_course_id}"
+          rescue
             @message= "No se pudo inscribir a las materias"
             @errors << 5
             @tcs_access = false
@@ -508,8 +507,8 @@ class StudentsController < ApplicationController
 
       if @errors.size.eql? 0
         tsp = TermStudentPayment.where(:folio=>@folio)
-    
-        if !tsp.size.eql? 0 
+
+        if !tsp.size.eql? 0
           @errors << "Ya existe un registro con ese folio"
         end
       end
@@ -530,10 +529,10 @@ class StudentsController < ApplicationController
     student.status=1
     if student.save
       @ts = TermStudent.where(:student_id=>@student[0].id,:status=>6)
-      ts  = @ts[0] 
+      ts  = @ts[0]
       ts.status = 1
       if ts.save
-        @tcs = TermCourseStudent.where(:status=>6,:term_student_id=>@ts[0].id)    
+        @tcs = TermCourseStudent.where(:status=>6,:term_student_id=>@ts[0].id)
         @tcs.each do |tcs|
           tcs.status=1
           if !tcs.save
