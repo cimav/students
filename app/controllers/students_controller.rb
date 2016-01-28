@@ -200,9 +200,12 @@ class StudentsController < ApplicationController
     campus_short_name = @student[0].campus.short_name
     terms     = Term.where("name like '%#{$NCICLO}%' and name like '%#{campus_short_name}%' and program_id=?",@student[0].program_id).map{|i| i.id} rescue []
     @ts       = TermStudent.joins(:term).where(:student_id=>@student[0].id,:term_id=>terms) rescue []
+    @tcs = TermCourseStudent.where(:term_student_id=>@ts[0].id,:status=>[1,6,7]) rescue []
+    @tsp = TermStudentPayment.where(:term_student_id=>@ts[0].id,:status=>[3,6,7])  rescue []
+
 
     # @ts.joins(:term).where(:terms=>{:name=>'2016-1 Chihuahua'})
-
+=begin
     if @student.size>0
       @ts_id = @ts[0].id rescue 0
       @tcs = TermCourseStudent.where(:term_student_id=>@ts_id,:status=>[1,6,7])
@@ -222,7 +225,7 @@ class StudentsController < ApplicationController
         end
       end
     end
-
+=end
     @include_js =  ["jquery","jquery-ui","jquery_ujs","enrollments"]
     @screen="enrollment"
     render :layout=>'gobmx'

@@ -17,19 +17,22 @@
         - access = true
       -elsif @tcs[0].status.eql? 7
         - access = true
-    - elsif @ts.size > 0
-      - if @ts[0].status.eql? 1
-        = image_tag "ok_40px.png", :id=> "img_ok_#{@student[0].id}", :width=>'40px'
-        %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}= "La inscripcion al ciclo #{$NCICLO} se ha completado"
-        %br
-          .salir
-            %a{'href' => "/"}= "[Ir a escolar]"
-            %a{'href' => "/kardex/#{current_user.id}"}= "[Ir a kardex]"
-            %a{'href' => "/logout"}= "[Salir]"
-        - return @haml_buffer.buffer
     - else
-      - if @student[0].status.eql? 6
-        - access = true
+      - if @ts.size > 0
+        - if @ts[0].status.eql? 1
+          = image_tag "ok_40px.png", :id=> "img_ok_#{@student[0].id}", :width=>'40px'
+          %b#emessage{:style=>"display: #{@display_refuse};font-weight: bold;"}= "La inscripcion al ciclo #{$NCICLO} se ha completado"
+          %br
+            .salir
+              %a{'href' => "/"}= "[Ir a escolar]"
+              %a{'href' => "/kardex/#{current_user.id}"}= "[Ir a kardex]"
+              %a{'href' => "/logout"}= "[Salir]"
+          - return @haml_buffer.buffer
+        - else
+          - access = true
+      - else
+        - if @student[0].status.eql? 6  
+          - access = true
 
     - if access
       - @refuse = false
