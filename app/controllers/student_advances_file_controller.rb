@@ -66,10 +66,12 @@ class StudentAdvancesFileController < ApplicationController
       logger.info "Error al buscar el staff #{staff_id}" 
     else
       @staff   = Staff.find(staff_id)
-      if !@staff.email.blank?
-        content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\"}"
-        @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
-        @mail.save
+      if @staff.institution_id.eql? 1
+        if !@staff.email.blank?
+          content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\"}"
+          @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
+          @mail.save
+        end
       end
     end
   end
