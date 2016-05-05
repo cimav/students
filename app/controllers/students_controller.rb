@@ -34,7 +34,6 @@ class StudentsController < ApplicationController
     @student = Student.joins(:term_students=>:term).includes(:program, :advance).find(current_user.id)
     @terms     = @student.term_students.collect {|i| [i.term.name, i.term.id]}.sort
 
-
     if params[:term_id].to_i == 0
       @term_id   = @terms.last[1]
     else
@@ -46,10 +45,12 @@ class StudentsController < ApplicationController
 
     if @tindex!= 0
       @p_term     = Term.find(@terms[@tindex - 1][1])
-      @p_advances = Advance.where("student_id=? AND advance_date between ? AND ?",@student.id,@p_term.start_date,@p_term.end_date).last
+      @p_advances = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@p_term.start_date,@p_term.end_date).last
     end
 
-    @advances   = Advance.where("student_id=? AND advance_date between ? AND ?",@student.id,@term.start_date,@term.end_date).last
+    @advances   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@term.start_date,@term.end_date).last
+    @protocol   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=2",@student.id,@term.start_date,@term.end_date)
+
     if !@advances.nil?
       if @advances.status.eql? "C"
         @adv_avg    = get_adv_avg(@advances)
@@ -250,7 +251,7 @@ class StudentsController < ApplicationController
       ## Obtenemos las materias que ya lleva acreditadas el alumno
       @stc = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND term_course_students.status=?",70,1)
       @scourses = @stc.map{|i| i.course_id}
-
+      puts "SCOURSES1: #{@scourses}"
       ## Nos traemos el plan de estudios
       @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99").order(:term)
       @optativas_requeridas = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99 AND courses.name like '%Optativa%'").size
@@ -278,8 +279,9 @@ class StudentsController < ApplicationController
         end ## do te_se
       end ## if
 
+      puts "SCOURSES2: #{@scourses}"
       @plan_estudios.each do |c|
-         logger.debug "PLAN: #{c.name}"
+         logger.debug "PLAN: #{c.id} #{c.name}"
          if !@scourses.include? c.id
            if c.name.include? "Optativa"
              if @optativas_total>0
@@ -294,7 +296,7 @@ class StudentsController < ApplicationController
       end
 
       @materias_faltantes.each do |mf|
-        logger.debug "FALTAN: #{mf.name}"
+        logger.debug "FALTAN: #{mf.id} #{mf.name}"
         @maxterm = mf.term
       end
 
@@ -521,7 +523,6 @@ class StudentsController < ApplicationController
     render :json => json
   end
 
-
   def endrollment
     json = {}
     @errors = []
@@ -551,5 +552,13 @@ class StudentsController < ApplicationController
 
     json[:errors]= @errors
     render :json => json
+  end
+
+  def get_protocol
+    advance   = Advance.find(params[:id])
+    staff_id  = params[:staff_id]
+    filename  = "#{Settings.sapos_route}/private/files/students/#{advance.student.id}"
+    pdf_route = "#{filename}/protocol-#{advance.id}-#{staff_id}.pdf"
+    send_file pdf_route, :x_sendfile=>true
   end
 end

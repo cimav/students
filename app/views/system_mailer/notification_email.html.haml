@@ -24,5 +24,9 @@
   = "Se le notifica que su director de tesis ha aprobado su inscripción para el ciclo, puede confirmar en la siguiente liga: http://escolar.cimav.edu.mx/inscripciones/"
 - elsif @hash[:view].eql? 7
   = "Se le notifica que su director de tesis ha rechazado su propuesta de materias, puede las correcciones necesarias en la siguiente liga: http://escolar.cimav.edu.mx/inscripciones/"
+- elsif @hash[:view].eql? 8
+  =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance de protocolo a la plataforma usted puede revisar el documento entrando a http://academicos.cimav.edu.mx/alumnos"
+- elsif @hash[:view].eql? 9
+  =  "Se ha calificado un avance de protocolo a la plataforma usted puede descargar el formato de evaluación entrando a http://escolar.cimav.edu.mx/calificaciones"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"

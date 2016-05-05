@@ -3,7 +3,7 @@ class StudentAdvancesFileController < ApplicationController
   respond_to :html, :json
   
   def index
-    @student = Student.includes(:program).find(session[:user_id])
+    @student      = Student.includes(:program).find(session[:user_id])
     @term_student = TermStudent.joins(:term).where("term_students.student_id=? and terms.start_date<=? and terms.end_date>=?",@student.id,Date.today,Date.today)
     render :layout=>false   
   end
@@ -48,28 +48,40 @@ class StudentAdvancesFileController < ApplicationController
  
   def send_email(student_advances_file)
     @student = Student.includes(:program).find(session[:user_id])
-    send_email_helper(@student,@student.supervisor)
-    send_email_helper(@student,@student.co_supervisor)
-    @student.advance.each do |adv|
-      if adv.advance_date>=Date.today - 300.days
-        send_email_helper(@student,adv.tutor1)
-        send_email_helper(@student,adv.tutor2)
-        send_email_helper(@student,adv.tutor3)
-        send_email_helper(@student,adv.tutor4)
-        send_email_helper(@student,adv.tutor5)
+
+    if student_advances_file.student_advance_type.to_i.eql? 3
+      @student.advance.where(:advance_type=>2).each do |adv|
+        send_email_helper(@student,adv.tutor1,2)
+        send_email_helper(@student,adv.tutor2,2)
       end
-    end 
+    else
+      send_email_helper(@student,@student.supervisor,1)
+      send_email_helper(@student,@student.co_supervisor,1)
+      @student.advance.each do |adv|
+        if adv.advance_date>=Date.today - 300.days
+          send_email_helper(@student,adv.tutor1,1)
+          send_email_helper(@student,adv.tutor2,1)
+          send_email_helper(@student,adv.tutor3,1)
+          send_email_helper(@student,adv.tutor4,1)
+          send_email_helper(@student,adv.tutor5,1)
+        end # if
+      end # each
+    end #else
   end 
 
-  def send_email_helper(student,staff_id)
+  def send_email_helper(student,staff_id,type)
     if staff_id.nil?
       logger.info "Error al buscar el staff #{staff_id}" 
     else
       @staff   = Staff.find(staff_id)
       if @staff.institution_id.eql? 1
         if !@staff.email.blank?
-          content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\"}"
-          @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
+          content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\",:view=>8}"
+          if type.to_i.eql? 1
+            @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
+          elsif type.to_i.eql? 2
+            @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de protocolo",:content=>content,:status=>0})
+          end
           @mail.save
         end
       end

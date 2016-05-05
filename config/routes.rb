@@ -27,6 +27,7 @@ Students::Application.routes.draw do
 
   match '/alumnos/inscripcion/materias/:id' => 'students#enrollment_courses'
   match '/alumnos/inscripcion/' => 'students#assign_courses'
+  match '/alumnos/protocolo/:id/:staff_id' => 'students#get_protocol'
 
   resources :student_advances_file_messages, :path=>'/avances/mensajes'
 end

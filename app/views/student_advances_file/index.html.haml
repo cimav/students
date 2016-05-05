@@ -101,6 +101,7 @@
 %div{'id'=>'advances_files'}
   %h2= "Avances"
   - advance_date_flag = 0
+  - visibility_flag   = false
   - if @term_student.size==0
     = "No hay ciclos activos"
   - @term_student.each_with_index do |ts, index|
@@ -108,10 +109,16 @@
       = "No hay fechas definidas para este ciclo"
       - break
     - if ts.term.advance_start_date <= Date.today and Date.today <= ts.term.advance_end_date
+      - @protocol     = Advance.where(:student_id=>@student.id,:advance_type=>Advance::PROTOCOL).where("advance_date between ? and ?",ts.term.start_date,ts.term.end_date)
       - advance_date_flag = 1
     %a{"class"=>"menu-selected"}= "Ciclo: #{ts.term.name}"
     - counter = 0
     - sat = StudentAdvancesFile::STUDENT_ADVANCE_TYPE.clone
+
+    - if @protocol.size.to_i > 0
+      - sat.delete(1)
+      - sat.delete(2)
+
     - StudentAdvancesFile.where(:term_student_id=>ts.id).each do |saf|
       %div{'id'=>"student_advances_file_#{saf.id}",'class'=>'file_class'}
         = "* #{StudentAdvancesFile::STUDENT_ADVANCE_TYPE[saf.student_advance_type]}:"
@@ -134,10 +141,18 @@
             = f.hidden_field :student_advances_file_id, {:value => saf.id}
             = f.text_area :message, :cols=>60, :rows=>3, :id=>"text_area_#{saf.id}"
             = button_tag "Enviar mensaje", :disable_with => "Enviando..." , :id=>"button_#{saf.id}", :class=>"message-button", :saf_id=>saf.id
-        - sat.delete(saf.student_advance_type)
+        - if saf.student_advance_type.in? [1,2]
+          - sat.delete(saf.student_advance_type)
         - counter = counter + 1
 
     - if counter != 2
+      - visibility_flag = true
+ 
+    -# if (@protocol.size.to_i > 0) && (counter.eql? 1)
+      - visibility_flag = false
+      
+
+    - if visibility_flag
       %br
       %br
       %br
