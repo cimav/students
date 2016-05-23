@@ -28,5 +28,12 @@
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance de protocolo a la plataforma usted puede revisar el documento entrando a http://academicos.cimav.edu.mx/alumnos"
 - elsif @hash[:view].eql? 9
   =  "Se ha calificado un avance de protocolo a la plataforma usted puede descargar el formato de evaluación entrando a http://escolar.cimav.edu.mx/calificaciones"
+- elsif @hash[:view].eql? 10
+  = "Su solicitud ha sido recibida, se esta programando la entrevista y en un máximo de 2 días recibirá respuesta en este mismo correo. Debe descargar el formato de la siguiente liga y llevarlo impreso el día de la reunión: http://posgrado.cimav.edu.mx#{@hash[:uri]}. Para cualquier asunto por favor responder este correo a #{@hash[:reply_to]}."
+- elsif @hash[:view].eql? 11
+  = "#{@hash[:full_name]} ha realizado una solicitud de servicio social, puede revisarlo en la página: http://posgrado.cimav.edu.mx/internados"
+- elsif @view.eql? 12
+  = @hash[:text]
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
+
