@@ -76,7 +76,7 @@ class StudentAdvancesFileController < ApplicationController
       @staff   = Staff.find(staff_id)
       if @staff.institution_id.eql? 1
         if !@staff.email.blank?
-          content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\",:view=>8}"
+          content = "{:full_name=>\"#{@student.full_name}\",:email=>\"#{@student.email}\",:view=>11}"
           if type.to_i.eql? 1
             @mail = Email.new({:from=>"atencion.posgrado@cimav.edu.mx",:to=>@staff.email,:subject=>"Se ha subido un archivo de avance",:content=>content,:status=>0})
           elsif type.to_i.eql? 2
