@@ -38,7 +38,7 @@
   = "Su solicitud ha sido recibida, se esta programando la entrevista y en un máximo de 2 días recibirá respuesta en este mismo correo. Debe descargar el formato de la siguiente liga y llevarlo impreso el día de la reunión: http://posgrado.cimav.edu.mx#{@hash[:uri]}. Para cualquier asunto por favor responder este correo a #{@hash[:reply_to]}."
 - elsif @hash[:view].eql? 14
   = "#{@hash[:full_name]} ha realizado una solicitud de servicio social, puede revisarlo en la página: http://posgrado.cimav.edu.mx/internados"
-- elsif @view.eql? 15
+- elsif @hash[:view].eql? 15
   = @hash[:text]
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
