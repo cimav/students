@@ -50,6 +50,7 @@ class StudentsController < ApplicationController
 
     @advances   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@term.start_date,@term.end_date).last
     @protocol   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=2",@student.id,@term.start_date,@term.end_date)
+    @seminar    = Advance.where("student_id=? AND advance_type=3",@student.id)
 
     if !@advances.nil?
       if @advances.status.eql? "C"
@@ -558,7 +559,11 @@ class StudentsController < ApplicationController
     advance   = Advance.find(params[:id])
     staff_id  = params[:staff_id]
     filename  = "#{Settings.sapos_route}/private/files/students/#{advance.student.id}"
-    pdf_route = "#{filename}/protocol-#{advance.id}-#{staff_id}.pdf"
+    if advance.advance_type.eql? 2
+      pdf_route = "#{filename}/protocol-#{advance.id}-#{staff_id}.pdf"
+    elsif advance.advance_type.eql? 3
+      pdf_route = "#{filename}/seminar-#{advance.id}-#{staff_id}.pdf"
+    end
     send_file pdf_route, :x_sendfile=>true
   end
 end

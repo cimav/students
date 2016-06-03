@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-  
+
   def not_found
     raise ActionController::RoutingError.new('Not Found')
   end
@@ -27,14 +27,12 @@ class ApplicationController < ActionController::Base
     store_location
     redirect_to '/login' unless authenticated?
   end
-  
+
   helper_method :current_user
-
-
 
   def store_location
     session[:forwarding_url] = request.url if request.get?
-  end 
+  end
 
   def redirect_back_or(default)
     redirect_to(session[:forwarding_url] || default)
@@ -44,6 +42,6 @@ class ApplicationController < ActionController::Base
 private
 def current_user
   @current_user ||= Student.find(session[:user_id]) if session[:user_id]
-end 
+end
 
 end

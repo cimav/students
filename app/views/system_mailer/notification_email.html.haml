@@ -40,6 +40,11 @@
   = "#{@hash[:full_name]} ha realizado una solicitud de servicio social, puede revisarlo en la página: http://posgrado.cimav.edu.mx/internados"
 - elsif @hash[:view].eql? 15
   = @hash[:text]
+- elsif @hash[:view].eql? 16
+  - adv = Advance.find(@hash[:advance_id])
+  = "Usted ha sido elegido como tutor del seminario \"#{adv.title}\" del alumno #{adv.student.full_name} una vez revisado puede calificar en la siguiente liga: http://academicos.cimav.edu.mx/calificaciones"
+- elsif @hash[:view].eql? 17
+  =  "Se ha calificado su seminario, puede descargar el formato de evaluación entrando a http://escolar.cimav.edu.mx/calificaciones"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
 
