@@ -9,6 +9,7 @@ Students::Application.routes.draw do
 
   match '/kardex/:id' => 'students#kardex'
   match '/calificaciones/:id/:term_id' => 'students#term_grades'
+  match '/calificaciones' => 'students#term_grades'
   
   match '/horarios/:id/:term_id' => 'students#schedule_table'
   match '/avances' => 'home#student_advances_files'

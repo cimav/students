@@ -42,9 +42,20 @@
   = @hash[:text]
 - elsif @hash[:view].eql? 16
   - adv = Advance.find(@hash[:advance_id])
-  = "Usted ha sido elegido como tutor del seminario \"#{adv.title}\" del alumno #{adv.student.full_name} una vez revisado puede calificar en la siguiente liga: http://academicos.cimav.edu.mx/calificaciones"
+  = "Usted ha sido elegido como tutor del seminario \"#{adv.title}\" del alumno #{adv.student.full_name} que se llevara acabo en la siguiente fecha y horario: #{@hash[:horario]}. Una vez revisado puede calificar en la siguiente liga: http://academicos.cimav.edu.mx/calificaciones"
 - elsif @hash[:view].eql? 17
   =  "Se ha calificado su seminario, puede descargar el formato de evaluación entrando a http://escolar.cimav.edu.mx/calificaciones"
+- elsif @hash[:view].eql? 18
+  - s = Student.find(@hash[:student_id].to_i)
+  =  "El seminario del alumno #{s.full_name} no fue aprobado y debe ser reprogramado"
+- elsif @hash[:view].eql? 19
+  - s = Student.find(@hash[:student_id].to_i)
+  =  "El seminario del alumno #{s.full_name} ha sido calificado con recomendaciones"
+- elsif @hash[:view].eql? 20
+  - adv = Advance.find(@hash[:advance_id])
+  =  "Su seminario \"#{adv.title}\" ha sido calificado con recomendaciones, puede ver el formato entrando a http://escolar.cimav.edu.mx/calificaciones"
+- elsif @hash[:view].eql? 21
+  =  "Su seminario ha sido de alta con en la siguiente fecha y horario: #{@hash[:horario]}"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
 

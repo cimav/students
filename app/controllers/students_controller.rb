@@ -31,13 +31,27 @@ class StudentsController < ApplicationController
     @screen="term_grades"
     @is_pdf = false
 
-    @student = Student.joins(:term_students=>:term).includes(:program, :advance).find(current_user.id)
+    @student   = Student.joins(:term_students=>:term).includes(:program, :advance).find(current_user.id)
     @terms     = @student.term_students.collect {|i| [i.term.name, i.term.id]}.sort
+    
+    if params[:id].nil?
+      params[:id]  = 0
+    end
+    
+    if params[:term_id].nil?
+      params[:term_id] = 0     
+    end
 
     if params[:term_id].to_i == 0
       @term_id   = @terms.last[1]
     else
       @term_id = params[:term_id]
+    end
+
+    if params[:id].to_i == 0
+      @p_id = @student.id
+    else
+      @p_id = params[:id]
     end
 
     @tindex     = @terms.index(@terms.rassoc(@term_id.to_i))
@@ -50,15 +64,15 @@ class StudentsController < ApplicationController
 
     @advances   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@term.start_date,@term.end_date).last
     @protocol   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=2",@student.id,@term.start_date,@term.end_date)
-    @seminar    = Advance.where("student_id=? AND advance_type=3",@student.id)
+    @seminar    = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=3",@student.id,@term.start_date,@term.end_date)
 
     if !@advances.nil?
       if @advances.status.eql? "C"
         @adv_avg    = get_adv_avg(@advances)
       end
     end
-    @ts         = TermStudent.where(:student_id => params[:id], :term_id => @term_id).first
-    @grades   = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE term_students.student_id = :student_id AND term_students.term_id = :term_id AND term_course_students.status = :status ORDER BY courses.name", {:student_id => params[:id], :term_id => @term_id, :status => TermCourseStudent::ACTIVE}])
+    @ts         = TermStudent.where(:student_id => @p_id, :term_id => @term_id).first
+    @grades   = TermStudent.find_by_sql(["SELECT courses.code, courses.name, grade FROM term_students INNER JOIN term_course_students ON term_students.id = term_course_students.term_student_id  INNER JOIN term_courses ON term_course_id = term_courses.id INNER JOIN courses ON courses.id = term_courses.course_id WHERE term_students.student_id = :student_id AND term_students.term_id = :term_id AND term_course_students.status = :status ORDER BY courses.name", {:student_id => @p_id, :term_id => @term_id, :status => TermCourseStudent::ACTIVE}])
     respond_with do |format|
       format.html do
         #render :layout => false
