@@ -117,23 +117,50 @@
   - adv = @seminar[0]
   %strong="EVALUACIONES DE SEMINARIO"
   %table
-    %tr
-      - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor1) rescue nil
-      %td{:width=>80}="Evaluador 1"
-      - if p.size > 0 
-        %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
-      -else
-        %td= "No ha evaluado seminario"
-    %tr
-      - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor2) rescue nil
-      %td="Evaluador 2"
-      - if p.size > 0
-        %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
-      - else
-        %td= "  No ha evaluado seminario"
+    - if !adv.tutor2.nil?
+      %tr
+        - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor1) rescue nil
+        %td{:width=>80}="Evaluador 1"
+        - if p.size > 0 
+          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+        -else
+          %td= "No ha evaluado seminario"
+    
+    - if !adv.tutor2.nil?
+      %tr
+        - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor2) rescue nil
+        %td="Evaluador 2"
+        - if p.size > 0
+          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
+        - else
+          %td= "  No ha evaluado seminario"
 
+    - if !adv.tutor3.nil?
+      %tr
+        - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor3) rescue nil
+        %td="Evaluador 3"
+        - if p.size > 0
+          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
+        - else
+          %td= "  No ha evaluado seminario"
 
+    - if !adv.tutor4.nil?
+      %tr
+        - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor4) rescue nil
+        %td="Evaluador 4"
+        - if p.size > 0
+          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
+        - else
+          %td= "  No ha evaluado seminario"
 
+    - if !adv.tutor5.nil?
+      %tr
+        - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor5) rescue nil
+        %td="Evaluador 5"
+        - if p.size > 0
+          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
+        - else
+          %td= "  No ha evaluado seminario"
 
 %table
   - @notas = @p_advances.notes rescue ""
