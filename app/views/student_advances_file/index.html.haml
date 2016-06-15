@@ -115,9 +115,10 @@
     - counter = 0
     - sat = StudentAdvancesFile::STUDENT_ADVANCE_TYPE.clone
 
-    - if @protocol.size.to_i > 0
-      - sat.delete(1)
-      - sat.delete(2)
+    - if !@protocol.nil?
+      - if @protocol.size.to_i > 0
+        - sat.delete(1)
+        - sat.delete(2)
 
     - StudentAdvancesFile.where(:term_student_id=>ts.id).each do |saf|
       %div{'id'=>"student_advances_file_#{saf.id}",'class'=>'file_class'}
