@@ -56,6 +56,9 @@
   =  "Su seminario \"#{adv.title}\" ha sido calificado con recomendaciones, puede ver el formato entrando a http://escolar.cimav.edu.mx/calificaciones"
 - elsif @hash[:view].eql? 21
   =  "Su seminario ha sido de alta con en la siguiente fecha y horario: #{@hash[:horario]}"
+- elsif @hash[:view].eql? 22
+  = @hash[:text]
+  %br= "Una vez realizada la entrevista debe calificar al aspirante entrando a la siguiente liga: http://posgrado.cimav.edu.mx/internados/aspirantes/calificar/#{@hash[:token]}"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
 
