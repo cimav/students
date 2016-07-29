@@ -59,6 +59,23 @@
 - elsif @hash[:view].eql? 22
   = @hash[:text]
   %br= "Una vez realizada la entrevista debe calificar al aspirante entrando a la siguiente liga: http://posgrado.cimav.edu.mx/internados/aspirantes/calificar/#{@hash[:token]}"
+- elsif @hash[:view].eql? 23
+  %b= @hash[:full_name]
+  %br= @hash[:text]
+- elsif @hash[:view].eql? 24
+  %b= @hash[:full_name]
+  %br
+  %br= "Se le informa que su solicitud ha sido autorizada, para terminar el proceso debe acreditar el curso de seguridad e higiene que consiste en 3 videos/exámenes entrando a este sitio: http://csh.cimav.edu.mx/"
+  %br
+  %br= "Debe registrarse con el mismo correo con el que hizo la solicitud o el sistema no identificará sus resultados."
+  %br
+  %br="Posteriormente debe cargar sus documentos accesando al sitio http://posgrado.cimav.edu.mx/internados/aspirantes/documentos mediante los siguientes datos de acceso:"
+  %br
+  %br= "usuario: #{@hash[:i_id]}"
+  %br= "password: #{@hash[:pass]}"
+  %br= @hash[:text]
+- elsif @hash[:view].to_i.eql? 25
+  = "#{@hash[:full_name]} <#{@hash[:email]}> se ha registrado como servicio CIMAV"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
 
