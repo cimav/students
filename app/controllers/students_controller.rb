@@ -2,8 +2,8 @@
 class StudentsController < ApplicationController
   before_filter :auth_required
   respond_to :html, :xml, :json
-  $CICLO = "2015-2"
-  $NCICLO = "2016-1"
+  $CICLO = "2017-1"
+  $NCICLO = "2017-2"
 
   def kardex
     @screen="kardex"
@@ -338,7 +338,8 @@ class StudentsController < ApplicationController
         @levels = 1
       end
 
-      @tcs2 = TermCourse.joins(:term=>:program).joins(:course).where(:programs=>{:level=>@levels},:terms=>{:status=>1}).where("courses.id not in (?) AND courses.program_id !=?",@scourses,@student.program.id).order("courses.program_id")
+      #@tcs2 = TermCourse.joins(:term=>:program).joins(:course).where(:programs=>{:level=>@levels},:terms=>{:status=>1}).where("courses.id not in (?) AND courses.program_id !=?",@scourses,@student.program.id).order("courses.program_id")
+      @tcs2 = TermCourse.joins(:term=>:program).joins(:course).where(:programs=>{:level=>@levels},:terms=>{:status=>1}).where("courses.id not in (?) AND courses.studies_plan_id !=?",@scourses,@student.studies_plan_id).order("courses.program_id")
 
       ## OPTATIVAS
       ## Obtenemos de nuevo los cursos acreditados
