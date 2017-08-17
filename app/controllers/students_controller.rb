@@ -265,7 +265,9 @@ class StudentsController < ApplicationController
     if @e_term
       ## Obtenemos las materias que ya lleva acreditadas el alumno
       @stc = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND term_course_students.status=?",70,1)
-      @scourses = @stc.map{|i| i.course_id}
+      @reprobadas = TermCourse.joins(:term_course_student=>:term_student).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade<? AND term_course_students.status=?",70,1)
+      @scourses    = @stc.map{|i| i.course_id}
+      @srejected   = @reprobadas.map{|i| i.course_id}
       puts "SCOURSES1: #{@scourses}"
       ## Nos traemos el plan de estudios
       @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99").order(:term)
@@ -278,20 +280,14 @@ class StudentsController < ApplicationController
       if @student.studies_plan_id.eql? 15
         @condemned = nil
         @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id]}
-        @plan_estudios.where("name like '%Temas Selectos%'").each do |te_se|
-          if !@scourses.include? te_se.id
-            @optativas_cursadas_map.each do |oc|
-              if oc[1].eql? 1 ## la optativa debe ser de MCM
-                @scourses << te_se.id
-                @optativas_total = @optativas_total - 1
-                @condemned = oc
-              else
-                @condemned = nil
-              end  ## if oc
-            end  ## do map
-            @optativas_cursadas_map.delete(@condemned)
-          end ## if scourses
-        end ## do te_se
+
+        @temas_selectos = @plan_estudios.where("name like '%Temas Selectos%'").order(:term)
+
+        opc_counter = 0
+        @optativas_cursadas_map.each do |oc|
+          @scourses << @temas_selectos[opc_counter].id
+          opc_counter = opc_counter + 1
+        end# @optativas_cursadas_map
       end ## if
 
       puts "SCOURSES2: #{@scourses}"
@@ -311,13 +307,15 @@ class StudentsController < ApplicationController
       end
 
       @materias_faltantes.each do |mf|
-        logger.debug "FALTAN: #{mf.id} #{mf.name}"
+        logger.debug "FALTAN: #{mf.id} #{mf.name} #{mf.term}"
         @maxterm = mf.term
       end
 
       if @materias_faltantes.size>0
-        logger.debug "PRIMER REGISTRO:  #{@materias_faltantes[0].name}"
-        @maxterm = @materias_faltantes[0].term - 1
+        logger.debug "PRIMER REGISTRO:  #{@materias_faltantes[0].name} #{@materias_faltantes.class}"
+        logger.debug "REPROBADAS: #{@srejected.size}" 
+        
+        @maxterm = @materias_faltantes[0].term-1
       else
         @maxterm = @plan_estudios.maximum(:term)
       end
@@ -326,9 +324,10 @@ class StudentsController < ApplicationController
       @smaxterm = [@maxterm,@maxterm+1,99]
       ## Nos traemos los cursos que no han sido aprobados, es decir, que no estan en scourses y >>
       ## los que estan en el semestre al que pertence el alumno mas uno.
-      # tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).where("terms.id=? AND courses.id not in (?) AND courses.term in (?)",@e_term.id,scourses,smaxterm).order("courses.program_id")
-      @tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1}).
-      where("terms.id=? AND courses.id not in (?) AND courses.term<=?",@e_term.id,@scourses,@maxterm+1).order("courses.program_id")    # agregamos los id de los cursos en el mapa de scourses
+      @tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1})
+      @tcs = @tcs.where("terms.id=? AND courses.id not in (?) AND courses.term<=?",@e_term.id,@scourses,@maxterm+1).order("courses.program_id")
+
+      # agregamos los id de los cursos en el mapa de scourses
       @scourses += @tcs.map {|i| i.course_id}
 
       ## Obtenemos todos los cursos para el resto de los programas
