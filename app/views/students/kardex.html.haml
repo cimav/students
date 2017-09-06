@@ -17,20 +17,16 @@
 - if !@is_pdf
   %h2 Kardex
 
-%table#grades_table  
-  %tr 
-    %th.centered= "Nombre de la Materia"
-    %th.centered= "Ciclo"
-    %th.centered= "Calificación"
+%table.table.table-striped
+  %thead
+    %tr 
+      %th.centered= "Nombre de la Materia"
+      %th.centered= "Ciclo"
+      %th.centered= "Calificación"
+  %tbody
     - @student.term_students.each do |te|
       - te.term_course_student.where(:status => TermCourseStudent::ACTIVE).each do |tcs|
-        - counter += 1
-        - if counter % 2 == 0
-          - klass = 'row-even'
-        - else
-          - klass = 'row-odd'
-
-        %tr{:class  => klass}
+        %tr
           %td= tcs.term_course.course.name
           %td.centered= tcs.term_course.term.name
           - if !(tcs.grade.nil?)
@@ -38,7 +34,7 @@
               - counter_grade += 1
               - sum = sum + tcs.grade
           - if tcs.grade.nil?
-            %td.centered= "N.D."
+            %td= "N.D."
           - else
             %td.centered
               - if (tcs.grade<70)
@@ -46,16 +42,12 @@
               -else
                 = tcs.grade
 
-    - avg = "N.D."
-    - if counter == 0
-      %tr
-        %td.centered{:colspan=>3}= "No hay resultados"
-    - else
       - avg = (sum / (counter_grade * 1.0)).round(2) if counter_grade > 0
-
-%h5= "Promedio: #{avg}"
+ 
+%br
+.well.well-sm
+  %b= "Promedio: #{avg}"
 
 %br
+%br
 %strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"
-
-
