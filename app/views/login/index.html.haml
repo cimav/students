@@ -1,3 +1,32 @@
+:css
+  #login-area{
+    margin: auto;
+    width: auto;
+    /*border: 1px solid black;
+    padding: 20px;*/
+    text-align: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .login-title{
+    font-size: 26px;
+    font-weight: bold;
+    padding-top: 10px;
+  }
+
+  .login-message{
+    font-size: 17px;
+    padding-top: 20px;
+  }
+
+  .login-methods{
+    padding-top: 6px;
+  }
+
+  .image{
+    padding-top: 20px;
+   }
+
 #login-area
   - fu =  @fu["gobmx"] rescue ""  #fu = forwarding_url
   .login-title= "Sistema Escolar"
@@ -6,5 +35,7 @@
     #login-google-apps.login-method
       = link_to '/auth/google_oauth2' do
         = image_tag("/assets/google-apps.png")
+  .image
+    = image_tag "/assets/login-logo.png", :alt=>"cimav"
   .clearfix
 

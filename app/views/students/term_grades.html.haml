@@ -1,9 +1,8 @@
-- if !@is_pdf
-  #student-term_grades-header
-    #student-term_grades-title
-      %h2 Calificaciones 
+= javascript_include_tag "students.js"
 
-#student-grades-area
+- if !@is_pdf
+  %h2 Calificaciones
+
 - if @is_pdf 
   = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
   %center
@@ -12,178 +11,206 @@
   %h4= "Nombre: #{@student.full_name}"
   %h4= "Programa: #{@student.program.name}"
 
-#tc-header    
-  %table.menu-top
-    %tbody
-      %tr
+.row
+  - current_term = 0
+  -if !@is_pdf
+    %nav{"aria-label"=>"Page navigation"}
+      %ul.pager
         - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
-        - terms.sort.each do |j|
-          %td
-            - if j[1].to_i == @term_id.to_i
-              %a.menu-selected{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
-              = image_tag "/assets/left-arrow-blue.png"
-            - else
-              %a.menu{'href'=> "/calificaciones/#{@student.id}/#{j[1]}"}=j[0]
+        - terms.sort.each_with_index do |j,index|
+          - if j[1].to_i == @term_id.to_i
+            - current_term = j[0]
+            %li.previous
+              - my_term = terms[index-1] 
+              - if !my_term.nil?
+                - if (index-1<=-1)
+                  %a{:href=>"#"}="&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;".html_safe
+                - else
+                  %a{:href=>"/calificaciones/#{@student.id}/#{terms[index-1][1]}"}
+                    %span{"aria-hidden"=>"true"}
+                      ="&larr;".html_safe
+                    =terms[index-1][0]
+            %li.next
+              - my_term = terms[index+1] 
+              - if !my_term.nil?
+                %a{:href=>"/calificaciones/#{@student.id}/#{my_term[1]}"}
+                  =my_term[0]
+                  %span{"aria-hidden"=>"true"}
+                    ="&rarr;".html_safe
+              - else
+                %a{:href=>"#"}="&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;".html_safe
+          
+.row
+  %h4.text-center
+    %b= "#{current_term}"
 
--if @ts.nil?
-  = "No hay datos para el ciclo #{@term_id}"
-- else
-  %table#grades_table
-    %tr 
-      %th.centered= "Clave"
-      %th= "Materia"
-      %th.centered= "Calificación"
-      %th.centered= "Periodo"
-      %th.centered= "Asignatura"
-    - c = 0 
-    - total = 0 
-    - @grades.each do |g| 
-      - grade = (g.grade.nil?)?0:g.grade
-      - total += grade
-      - c += 1
-      - if c % 2 == 0 
-        - klass = 'row-even'
-      - else
-        - klass = 'row-odd'
-      %tr{:class => klass}
-        %td.centered= g.code
-        %td= g.name
-        %td.centered= grade
-        %td.centered= @ts.term.name
-        %td.centered= "OBLIGATORIA"
-    - if c == 0
-      - avg = 0 
+.row
+  -if @ts.nil?
+    = "No hay datos para el ciclo #{@term_id}"
+  - else
+    - if @grades.size<=0
+      %br
+      %center="Sin materias para este ciclo"
+      %br
+        
     - else
-      - avg = total / c
-  
-    - c += 1
-    - if c % 2 == 0
-      - klass = 'row-even'
-    - else
-      - klass = 'row-odd'
-    %tr{:class => klass}
-      %td= " "
-      %td= " "
-      %td.centered= "."
-      %td= " "
-      %td= " "
-  
-    - c += 1
-    - if c % 2 == 0
-      - klass = 'row-even'
-    - else
-      - klass = 'row-odd'
-    %tr{:class => klass}
-      %td= " "
-      %td= " "
-      %td.centered= "."
-      %td= " "
-      %td= " "
-  
-    - c += 1
-    - if c % 2 == 0
-      - klass = 'row-even'
-    - else
-      - klass = 'row-odd'
-    %tr{:class => klass}
-      %td
-      %td
-        %strong= "PROMEDIO"
-      %td.centered
-        %strong= sprintf( "%0.02f", avg)
-      %td
-      %td
-
-- if @protocol.size>0
-  - adv = @protocol[0]
-  %strong="EVALUACIONES DE PROTOCOLO"
-  %table
-    %tr
-      - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor1) rescue nil
-      %td{:width=>80}="Evaluador 1"
-      - if p.size > 0 
-        %td= link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
-      -else
-        %td= "No ha evaluado protocolo"
-    %tr
-      - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor2) rescue nil
-      %td="Evaluador 2"
-      - if p.size > 0
-        %td= link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
-      - else
-        %td= "  No ha evaluado protocolo"
-
-- if @seminar.size>0
-  - adv = @seminar[0]
-  %strong="EVALUACIONES DE SEMINARIO"
-  %table
-    - if !adv.tutor2.nil?
-      %tr
+      %br
+      %table.table.table-striped
+        %thead
+          %tr
+            %th="Clave"
+            %th="Materia"
+            %th="Calificación"
+            %th="Periodo"
+            %th="Asignatura"
+        %tbody
+          - total = 0 
+          - @grades.each do |g| 
+            - grade = (g.grade.nil?)?0:g.grade
+            - total += grade
+            %tr
+              %td= g.code
+              %td= g.name
+              %td= grade
+              %td= @ts.term.name
+              %td= "OBLIGATORIA"
+ 
+.row
+  %br
+  - if @protocol.size>0
+    - adv = @protocol[0]
+    %ul.list-group.col-md-4
+      %li.list-group-item
+        %strong="EVALUACIONES DE PROTOCOLO"
+      %li.list-group-item
+        = "Evaluador 1"
+        = "&nbsp;&nbsp;".html_safe
         - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor1) rescue nil
-        %td{:width=>80}="Evaluador 1"
         - if p.size > 0 
-          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
-        -else
-          %td= "No ha evaluado seminario"
-    
-    - if !adv.tutor2.nil?
-      %tr
+          = link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+        - else
+          = "No ha evaluado protocolo"
+      %li.list-group-item
         - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor2) rescue nil
-        %td="Evaluador 2"
-        - if p.size > 0
-          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
+        = "Evaluador 2"
+        = "&nbsp;&nbsp;".html_safe
+        - if p.size > 0 
+          = link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
         - else
-          %td= "  No ha evaluado seminario"
-
-    - if !adv.tutor3.nil?
-      %tr
+          = "No ha evaluado protocolo"
+      %li.list-group-item
         - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor3) rescue nil
-        %td="Evaluador 3"
-        - if p.size > 0
-          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
+        = "Evaluador 3"
+        = "&nbsp;&nbsp;".html_safe
+        - if p.size > 0 
+          = link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
         - else
-          %td= "  No ha evaluado seminario"
-
-    - if !adv.tutor4.nil?
-      %tr
+          = "No ha evaluado protocolo"
+      %li.list-group-item
         - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor4) rescue nil
-        %td="Evaluador 4"
-        - if p.size > 0
-          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
+        = "Evaluador 4"
+        = "&nbsp;&nbsp;".html_safe
+        - if p.size > 0 
+          = link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
         - else
-          %td= "  No ha evaluado seminario"
-
-    - if !adv.tutor5.nil?
-      %tr
+          = "No ha evaluado protocolo"
+      %li.list-group-item
         - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor5) rescue nil
-        %td="Evaluador 5"
-        - if p.size > 0
-          %td= link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
+        = "Evaluador 5"
+        = "&nbsp;&nbsp;".html_safe
+        - if p.size > 0 
+          = link_to 'Formato', "/alumnos/protocolo/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
         - else
-          %td= "  No ha evaluado seminario"
+          = "No ha evaluado protocolo"
+    
+  
+  - if @seminar.size>0
+    - adv = @seminar[0]
+    %ul.list-group.col-md-4
+      %li.list-group-item
+        %strong="EVALUACIONES DE SEMINARIO"
+      - if !adv.tutor1.nil?
+        %li.list-group-item
+          - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor1) rescue nil
+          ="Evaluador 1"
+          = "&nbsp;&nbsp;".html_safe
+          - if p.size > 0 
+            = link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor1}", :target=> "_blank"
+          -else
+            = "No ha evaluado seminario"
+      - if !adv.tutor2.nil?
+        %li.list-group-item
+          - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor2) rescue nil
+          ="Evaluador 2"
+          = "&nbsp;&nbsp;".html_safe
+          - if p.size > 0 
+            = link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor2}", :target=> "_blank"
+          -else
+            = "No ha evaluado seminario"
+      - if !adv.tutor3.nil?
+        %li.list-group-item
+          - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor3) rescue nil
+          ="Evaluador 3"
+          = "&nbsp;&nbsp;".html_safe
+          - if p.size > 0 
+            = link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor3}", :target=> "_blank"
+          -else
+            = "No ha evaluado seminario"
+      - if !adv.tutor4.nil?
+        %li.list-group-item
+          - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor4) rescue nil
+          ="Evaluador 4"
+          = "&nbsp;&nbsp;".html_safe
+          - if p.size > 0 
+            = link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor4}", :target=> "_blank"
+          -else
+            = "No ha evaluado seminario"
+      - if !adv.tutor5.nil?
+        %li.list-group-item
+          - p = Protocol.where(:advance_id=>adv.id,:staff_id=>adv.tutor5) rescue nil
+          ="Evaluador 5"
+          = "&nbsp;&nbsp;".html_safe
+          - if p.size > 0 
+            = link_to 'Formato', "/alumnos/seminario/#{adv.id}/#{adv.tutor5}", :target=> "_blank"
+          -else
+            = "No ha evaluado seminario"
 
-%table
+.row
+  %br
   - @notas = @p_advances.notes rescue ""
-  %tr{:colspan=>terms.size}
-    %td
-      %br= "Comentarios al avance de investigación anterior:"
-      = @p_advances.title rescue ""
-      %br 
-      = text_area_tag "tutors_notes_0", @notas,:size=>"105x10",:disabled=>true
+  .panel-group{:id=>"accordion","role"=>"tablist", "aria-multiselectable"=>"true"}
+    .panel.panel-default
+      .panel-heading{:role=>"tab",:id=>"headingOne"}
+        %b= "Comentarios al avance de investigación anterior"
+        %a.text-glup{:role=>"button","data-toggle"=>"collapse","data-parent"=>"#accordion",:href=>"#collapseOne","aria-expanded"=>"true","aria-controlls"=>"collapseOne"}
+          %span.glyphicon.glyphicon-eye-open#glyp1
+          %font#glyp1-font= "Ver"
+        %br
+        %b= @p_advances.title rescue ""
+      .panel-collapse.collapse{:id=>"collapseOne",:role=>"tabpanel","aria-labelledby"=>"headingOne"}
+        .panel-body
+          = @notas
 
-  - @notas = @advances.notes rescue ""
-  %tr{:colspan=>terms.size}
-    %td
-      %br= "Comentarios al avance de investigación actual:"
-      = @advances.title rescue ""
-      %br 
-      = text_area_tag "tutors_notes_1", @notas,:size=>"105x10",:disabled=>true
-  %tr{:colspan=>terms.size}
-    %td
-      - if !@advances.nil?
-        - if @advances.status.eql? "C" 
-          %br= "Calificación Avance: #{@adv_avg}"
-        - else
-          %br= "La calificación del avance se mostrara hasta el cierre de calificaciones"
-%br
-%strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"
+    - @notas = @advances.notes rescue ""
+    .panel.panel-default
+      .panel-heading{:role=>"tab",:id=>"headingTwo"}
+        %b= "Comentarios al avance de investigación actual"
+        %br
+        %b= @advances.title rescue ""
+        %a.text-glup{:role=>"button","data-toggle"=>"collapse","data-parent"=>"#accordion",:href=>"#collapseTwo","aria-expanded"=>"false","aria-controlls"=>"collapseTwo"}  
+          %span.glyphicon.glyphicon-eye-open#glyp2
+          %font#glyp2-font= "Ver"
+      .panel-collapse.collapse{:id=>"collapseTwo",:role=>"tabpanel","aria-labelledby"=>"headingTwo"}
+        .panel-body
+          = @notas
+
+.row
+  - if !@advances.nil?
+    - if @advances.status.eql? "C"
+      .well.well-sm
+        %b= "Calificación Avance: #{@adv_avg}"
+  - else
+    .well.well-sm
+      %b= "La calificación del avance se mostrara hasta el cierre de calificaciones"
+
+  %strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"

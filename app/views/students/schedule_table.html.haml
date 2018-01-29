@@ -1,6 +1,7 @@
+= stylesheet_link_tag "pdf2"
 - if !@is_pdf
-  #student-term_grades-header
-    #student-term_grades-title
+  #student-header
+    #student-title
       %h2 Horarios
 - if @is_pdf
   = image_tag "http://posgrado.cimav.edu.mx/images/pdf-logo-top.jpg", :style => "margin-bottom: 20px; width: 100%;"
@@ -9,29 +10,46 @@
   %h4= "Matrícula: #{@student.card}"
   %h4= "Nombre: #{@student.full_name}"
   %h4= "Programa: #{@student.program.name}"
-#tc-header
-  -if !@is_pdf
-    %table.menu-top
-      %tbody
-        %tr
-          - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
-          - terms.sort.each do |j|
-            %td
-              - if j[1].to_i == @term_id.to_i
-                %a.menu-selected{'href'=> "/horarios/#{@student.id}/#{j[1]}"}=j[0]
-                = image_tag "/assets/left-arrow-blue.png"
-              -else
-                %a.menu{'href'=> "/horarios/#{@student.id}/#{j[1]}"}=j[0]
-  %br
+%br
+-if !@is_pdf
+  %nav{"aria-label"=>true}
+    %ul.pager
+      - terms = @student.term_students.collect {|i| [i.term.name, i.term.id]}
+      - terms.sort.each_with_index do |j,index|
+        - if j[1].to_i == @term_id.to_i
+          - if (index-1)<0
+            %li.previous.disabled
+              %a
+                %span{"aria-hidden"=>true}
+                  ="&larr;".html_safe
+                  = " &nbsp  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;".html_safe
+          - else
+            %li.previous
+              %a{:href=>"/horarios/#{@student.id}/#{terms[index-1][1]}"}
+                %span{"aria-hidden"=>true}
+                  ="&larr;".html_safe
+                = terms[index-1][0]
+          %li
+            %span{"aria-hidden"=>true}
+              %b= j[0]
+          - if terms[index+1].nil?
+            %li.next.disabled
+              %a
+                %span{"aria-hidden"=>true}
+                  = " &nbsp  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;".html_safe
+                  ="&rarr;".html_safe
+          - else
+            %li.next
+              %a{:href=>"/horarios/#{@student.id}/#{terms[index+1][1]}"}
+                %span{"aria-hidden"=>true}
+                  ="&rarr;".html_safe
+                = terms[index+1][0]
   #tc-title
     - if @is_pdf
       %div= "Horario: #{@ts.term.name} (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
     - else
-      %div (#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})
-
-- if !@is_pdf
-  .pdf-link= link_to "PDF", :controller => "students", :action => "schedule_table", :id => @ts.student_id, :term_id => @ts.term_id, :format => 'pdf'
- 
+      %div{:align=>:center} 
+        = "(#{l @ts.term.start_date, :format => :long} – #{l @ts.term.end_date, :format => :long})"
 
 %table#student-schedule
   %tr
@@ -54,6 +72,11 @@
               .session-staff= k['staff_name']
               .session-staff= k['classroom']
               .session-comments= k['comments']
+
+- if !@is_pdf
+  .my-pdf{:align=>:right}
+    %b= link_to "PDF", :controller => "students", :action => "schedule_table", :id => @ts.student_id, :term_id => @ts.term_id, :format => 'pdf'
+    %span.glyphicon.glyphicon-download-alt
 
 - if !@is_pdf
   %br
