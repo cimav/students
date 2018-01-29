@@ -48,6 +48,7 @@
                     = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url}", :id => "img-student-#{@student.id}", :class=> "img-circle", :width=>"200px", :height=>"200px", :alt=>"Buscando imagen...", :align=>"center"
                 %br
                 %strong= "#{@student.full_name}"
+                %br
                 %strong= "#{@student.program.name}"
                 %br
                 %br
