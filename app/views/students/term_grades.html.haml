@@ -21,10 +21,15 @@
           - if j[1].to_i == @term_id.to_i
             - current_term = j[0]
             %li.previous
-              %a{:href=>"/calificaciones/#{@student.id}/#{terms[index-1][1]}"}
-                %span{"aria-hidden"=>"true"}
-                  ="&larr;".html_safe
-                =terms[index-1][0]
+              - my_term = terms[index-1] 
+              - if !my_term.nil?
+                - if (index-1<=-1)
+                  %a{:href=>"#"}="&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;".html_safe
+                - else
+                  %a{:href=>"/calificaciones/#{@student.id}/#{terms[index-1][1]}"}
+                    %span{"aria-hidden"=>"true"}
+                      ="&larr;".html_safe
+                    =terms[index-1][0]
             %li.next
               - my_term = terms[index+1] 
               - if !my_term.nil?
@@ -36,8 +41,8 @@
                 %a{:href=>"#"}="&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;".html_safe
           
 .row
-  %p.text-center{:style=>"color:#337ab7;"}
-    %strong= "Ciclo escolar: #{current_term}"
+  %h4.text-center
+    %b= "#{current_term}"
 
 .row
   -if @ts.nil?

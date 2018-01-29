@@ -1,1 +1,7 @@
-%iframe{"name" => "submit_iframe", "id" => "files_iframe", "src" => "/avances/archivo", "scrolling" => "no", "width" => "100%", "height" => "1000px" }
+%h2
+  = "&nbsp;".html_safe
+  ="  Avances semestrales"
+%br
+
+#advances_file_iframe
+  %iframe{"name" => "submit_iframe", "id" => "files_iframe", "src" => "/avances/archivo", "scrolling" => "no", "width" => "100%", "height" => "1000px", :style=>"border: none;" }
