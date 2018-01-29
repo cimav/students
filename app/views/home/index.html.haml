@@ -1,83 +1,85 @@
 %h2= "Datos personales"
-%table.data{:align=>'center',:width=>'100%'}
-  %tr.row-odd
-    %td.left= "Sexo: "
-    %td.right
-      - if @student.gender=='F'
-        = "Mujer"
-      - if @student.gender=='H'
-        = "Hombre"
-  %tr.row-even
-    %td.left= "Lugar de nacimiento: "
-    %td.right
-      = @student.city.blank? ? "No disponible" : @student.city
-      = ","
-      = @student.state.blank? ? "No disponible" : @student.state.name
-      = ","
-      = @student.country.blank? ? "No disponible" : @student.country.name
-  %tr.row-odd
-    %td.left= "Dirección:"
-    %td.right= @student.contact.blank? ? "No disponible" : @student.contact.address1
-  %tr.row-even
-    %td.left= "IFE:" 
-    %td.right=@student.ife
-  %tr.row-odd
-    %td.left="CURP:"
-    %td.right=@student.curp
-  %tr.row-even
-    %td.left="Contacto en caso de accidente:"
-    %td.right="#{@student.accident_contact} (#{@student.accident_phone})"
-  %tr.row-odd
-    %td.left="Seguridad Social:" 
-    %td.right=@student.ssn
-  %tr.row-even
-    %td.left= "Tipo de sangre:"
-    %td.right= @student.blood_type
-  %tr.row-odd
-    %td.left= "Pasaporte: " 
-    %td.right= @student.passport.blank? ? "No disponible" : @student.passport
-  %tr.row-even
-    %td.left= "Email:"
-    %td.right= @student.email
+%table.table.table-striped
+  %tbody
+    %tr
+      %td= "Sexo: "
+      %td
+        - if @student.gender=='F'
+          = "Mujer"
+        - if @student.gender=='H'
+          = "Hombre"
+    %tr
+      %td= "Lugar de nacimiento: "
+      %td
+        = @student.city.blank? ? "No disponible" : @student.city
+        = ","
+        = @student.state.blank? ? "No disponible" : @student.state.name
+        = ","
+        = @student.country.blank? ? "No disponible" : @student.country.name
+    %tr
+      %td= "Dirección:"
+      %td= @student.contact.blank? ? "No disponible" : @student.contact.address1
+    %tr
+      %td= "IFE:" 
+      %td=@student.ife
+    %tr
+      %td="CURP:"
+      %td=@student.curp
+    %tr
+      %td="Contacto en caso de accidente:"
+      %td="#{@student.accident_contact} (#{@student.accident_phone})"
+    %tr
+      %td="Seguridad Social:" 
+      %td=@student.ssn
+    %tr
+      %td= "Tipo de sangre:"
+      %td= @student.blood_type
+    %tr
+      %td= "Pasaporte: " 
+      %td= @student.passport.blank? ? "No disponible" : @student.passport
+    %tr
+      %td= "Email:"
+      %td= @student.email
 
 %br
 %h2= "Datos académicos"
-%table.data{:align=>'center',:width=>'100%'}
-  %tr.row-odd
-    %td.left= "Matricula: "
-    %td.right= @student.card
-  %tr.row-even
-    %td.left= "Tiempo estudiante: "
-    %td.right= "#{@year} #{@text_year} #{@month} #{@text_month}"
-  %tr.row-odd
-    %td.left= "Ciclos Cursados (Ciclos Totales):"
-    %td
-      - tcs_size = @student.term_students.size
-      - if tcs_size > @student.program.terms_qty
-        %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
-      - else
-        = "#{tcs_size} (#{@student.program.terms_qty})"
-  %tr.row-even
-    %td.left= "Asesor:"
-    %td.right= @asesor
-  %tr.row-odd
-    %td.left= "Coasesor:" 
-    %td.right= @coasesor
-  %tr.row-even
-    %td.left= "Fecha de inicio:"
-    %td.right= @student.start_date
-  %tr.row-odd
-    %td.left= "CVU:"
-    %td.right= @student.cvu
-  %tr.row-even
-    %td.left= "Campus:" 
-    %td.right= @student.campus.blank? ? "No disponible" : @student.campus.name
-  %tr.row-odd
-    %td.left= "Ubicación:"
-    %td.right= @student.location
-  %tr.row-even
-    %td.left= "Grado Anterior:"
-    %td.right= "#{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
+%table.table.table-striped
+  %tbody
+    %tr
+      %td= "Matricula: "
+      %td= @student.card
+    %tr
+      %td= "Tiempo estudiante: "
+      %td= "#{@year} #{@text_year} #{@month} #{@text_month}"
+    %tr
+      %td= "Ciclos Cursados (Ciclos Totales):"
+      %td
+        - tcs_size = @student.term_students.size
+        - if tcs_size > @student.program.terms_qty
+          %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
+        - else
+          = "#{tcs_size} (#{@student.program.terms_qty})"
+    %tr
+      %td= "Asesor:"
+      %td= @asesor
+    %tr
+      %td= "Coasesor:" 
+      %td= @coasesor
+    %tr
+      %td= "Fecha de inicio:"
+      %td= @student.start_date
+    %tr
+      %td= "CVU:"
+      %td= @student.cvu
+    %tr
+      %td= "Campus:" 
+      %td= @student.campus.blank? ? "No disponible" : @student.campus.name
+    %tr
+      %td= "Ubicación:"
+      %td= @student.location
+    %tr
+      %td= "Grado Anterior:"
+      %td= "#{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
 
 %br
 %strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"
