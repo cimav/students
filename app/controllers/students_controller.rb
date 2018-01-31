@@ -1,6 +1,8 @@
 # coding: utf-8
 class StudentsController < ApplicationController
   before_filter :auth_required
+  before_filter :news
+
   respond_to :html, :xml, :json
   $CICLO = "2017-1"
   $NCICLO = "2017-2"
