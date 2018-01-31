@@ -1,5 +1,7 @@
 class HomeController < ApplicationController
   before_filter :auth_required
+  before_filter :news
+
   respond_to :html, :json
 
   def index

@@ -39,6 +39,10 @@ class ApplicationController < ActionController::Base
     session.delete(:forwarding_url)
   end
 
+  def news
+    @student = Student.find(current_user.id)
+    @tcs     = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(:term_students=>{:student_id=>current_user.id}).where("term_course_students.teacher_evaluation=? AND (courses.notes not like '%[AI]%' OR courses.notes is null) AND terms.name like ?",false,"%#{$YEAR}%")
+  end
 private
 def current_user
   @current_user ||= Student.find(session[:user_id]) if session[:user_id]

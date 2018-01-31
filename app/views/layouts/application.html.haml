@@ -67,6 +67,11 @@
                   %a.menu{'href' => "/servicios/#{@student.id}"}= "  Servicios"
                 %li{:class => active_class("/inscripcion/cimav")}
                   %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
+                %li{:class => active_class("/inscripcion/cimav")}
+                  %a.menu{'href' => "/evaluacion"}
+                    = "  Evaluación Docente"
+                    - if @tcs.size > 0
+                      %span.badge{:style=>"background-color: #dc3545"}=@tcs.size
 
           .col-md-10.content
             .container

@@ -10,7 +10,7 @@ Students::Application.routes.draw do
   match '/kardex/:id' => 'students#kardex'
   match '/calificaciones/:id/:term_id' => 'students#term_grades'
   match '/calificaciones' => 'students#term_grades'
-  
+
   match '/horarios/:id/:term_id' => 'students#schedule_table'
   match '/avances' => 'home#student_advances_files'
   
@@ -32,4 +32,8 @@ Students::Application.routes.draw do
   match '/alumnos/seminario/:id/:staff_id' => 'students#get_protocol'
 
   resources :student_advances_file_messages, :path=>'/avances/mensajes'
+  scope(:path_names => { :new => "nuevo", :edit => "editar" }) do
+    resources :teacher_evaluations,:path=>"evaluacion"
+  end
+  
 end
