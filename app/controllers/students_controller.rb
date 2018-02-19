@@ -279,10 +279,10 @@ class StudentsController < ApplicationController
       @srejected   = @reprobadas.map{|i| i.course_id}
       puts "SCOURSES1: #{@scourses}"
       ## Nos traemos el plan de estudios
-      @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99").order(:term)
-      @optativas_requeridas = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term!=99 AND courses.name like '%Optativa%'").size
-      @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term=?",70,99)
-      @alternativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term!=? AND courses.program_id!=?",70,99,@student.program.id)
+      @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term not in (99,100)").order(:term)
+      @optativas_requeridas = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term not in (99,100) AND courses.name like '%Optativa%'").size
+      @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term in (?)",70,[99,100])
+      @alternativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term not in (?) AND courses.program_id!=?",70,[99,100],@student.program.id)
       @optativas_total = @optativas_cursadas.size + @alternativas_cursadas.size
       @materias_faltantes = []
 
@@ -330,7 +330,7 @@ class StudentsController < ApplicationController
       end
 
       ## Almacenamos en un arreglo los ciclos
-      @smaxterm = [@maxterm,@maxterm+1,99]
+      @smaxterm = [@maxterm,@maxterm+1,100]
       ## Nos traemos los cursos que no han sido aprobados, es decir, que no estan en scourses y >>
       ## los que estan en el semestre al que pertence el alumno mas uno.
       @tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1})
@@ -355,11 +355,11 @@ class StudentsController < ApplicationController
       # Obtenemos las materias del plan de estudios que faltan
       @cs = Course.where("program_id=? AND term<=? AND id not in (?)",@student.program.id,@maxterm+1,@scourses)
       # obtenemos la cantidad de optativas que ya han sido aprobadas
-      @optativas = TermCourse.joins(:term_course_student=>:term_student).joins(:course).where("term_students.student_id=? AND courses.program_id=? AND term_course_students.grade>=? AND courses.term=?",@student.id,@student.program.id,70,99)
+      @optativas = TermCourse.joins(:term_course_student=>:term_student).joins(:course).where("term_students.student_id=? AND courses.program_id=? AND term_course_students.grade>=? AND courses.term in (?)",@student.id,@student.program.id,70,[99,100])
       @soptativas = @optativas.map{|i| i.course_id}
       # ahora las optativas que faltan para el programa
       @soptativas << 0
-      @optativasf = TermCourse.joins(:course).where("courses.program_id=? AND courses.id not in (?) AND courses.term=? AND term_id=?",@student.program.id,@soptativas,99,@e_term.id)
+      @optativasf = TermCourse.joins(:course).where("courses.program_id=? AND courses.id not in (?) AND courses.term in (?) AND term_id=?",@student.program.id,@soptativas,[99,100],@e_term.id)
 
       ## asisgnando permisos para inscribir sin materias
       @without_courses = false
