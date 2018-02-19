@@ -65,8 +65,9 @@
                   %a.menu{'href' => "/avances"}= "  Avances"
                 %li{:class => active_class("/servicios/#{@student.id}")}
                   %a.menu{'href' => "/servicios/#{@student.id}"}= "  Servicios"
-                %li{:class => active_class("/inscripcion/cimav")}
-                  %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
+                - if @tcs.size.eql? 0
+                  %li{:class => active_class("/inscripcion/cimav")}
+                    %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
                 %li{:class => active_class("/inscripcion/cimav")}
                   %a.menu{'href' => "/evaluacion"}
                     = "  Evaluación Docente"
