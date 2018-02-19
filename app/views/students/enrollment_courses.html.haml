@@ -100,7 +100,7 @@
               %td
                 %span{:style=>"font-weight: bold; font-size:12px;"}
                   = "#{tc.course.name}"
-                  - if tc.course.term.eql? 99
+                  - if tc.course.term.in? [99,100]
                     = "(Optativa)"
                   = "[#{tc.term.name}]"
                 %br
