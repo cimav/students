@@ -127,7 +127,7 @@
     %a{'href' => "/kardex/#{current_user.id}"}= "[Ir a kardex]"
     %a{'href' => "/logout"}= "[Salir]"
 
-#new-enrollment-dialog
+#new-enrollment-dialog{:style=>"overflow: scroll;"}
   #courses
     = image_tag "ajax-load2.gif", :id=> "img-loader",:align=>:center,:valign=>:center
   #buttons
