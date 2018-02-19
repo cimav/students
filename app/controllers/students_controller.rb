@@ -4,8 +4,8 @@ class StudentsController < ApplicationController
   before_filter :news
 
   respond_to :html, :xml, :json
-  $CICLO = "2017-1"
-  $NCICLO = "2017-2"
+  $CICLO = "2017-2"
+  $NCICLO = "2018-1"
   $YEAR = "2017-2"
 
   def kardex
