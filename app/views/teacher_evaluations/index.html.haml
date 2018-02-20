@@ -1,12 +1,13 @@
 %h2 Evaluaciones
 
-- if @tcs.size>0
+- if @TCS.size>0
   .list-group
-  - @tcs.each do |t|
+  - @TCS.each do |t|
     - if t.teacher_evaluation.eql? false
       %a.list-group-item.list-group-item-action{:href=>"evaluacion/#{t.id}"}
         %b= t.term_course.course.name
         = t.term_course.staff.full_name rescue "N.D"
         = t.term_course.course.notes
+        = t.term_course.term.name
 - else
   %h3= "No hay evaluaciones pendientes"

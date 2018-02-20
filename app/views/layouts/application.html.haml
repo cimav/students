@@ -66,14 +66,14 @@
                   %a.menu{'href' => "/avances"}= "  Avances"
                 -# %li{:class => active_class("/servicios/#{@student.id}")}
                   %a.menu{'href' => "/servicios/#{@student.id}"}= "  Servicios"
-                - if @tcs.size.eql? 0
+                - if @TCS.size.eql? 0
                   %li{:class => active_class("/inscripcion/cimav")}
                     %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
                 %li{:class => active_class("/inscripcion/cimav")}
                   %a.menu{'href' => "/evaluacion"}
                     = "  Evaluación Docente"
-                    - if @tcs.size > 0
-                      %span.badge{:style=>"background-color: #dc3545"}=@tcs.size
+                    - if @TCS.size > 0
+                      %span.badge{:style=>"background-color: #dc3545"}=@TCS.size
 
           .col-md-10.content
             .container

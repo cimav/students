@@ -41,7 +41,14 @@ class ApplicationController < ActionController::Base
 
   def news
     @student = Student.find(current_user.id)
-    @tcs     = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(:term_students=>{:student_id=>current_user.id},:status=>1).where("term_course_students.teacher_evaluation=? AND (courses.notes not like '%[AI]%' OR courses.notes is null) AND terms.name like ?",false,"%#{$YEAR}%")
+    @TCS     = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(:term_students=>{:student_id=>current_user.id},:status=>1).where("term_course_students.teacher_evaluation=? AND (courses.notes not like '%[AI]%' OR courses.notes is null) AND terms.name like ?",false,"%#{$YEAR}%")
+    @TCS = @TCS.to_a
+    remove = Array.new
+    @TCS.each do |tcs|
+      if tcs.term_course.term.name.include? 'Revalida'
+         @TCS.delete(tcs)
+      end
+    end
   end
 private
 def current_user

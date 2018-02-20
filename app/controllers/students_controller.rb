@@ -213,9 +213,7 @@ class StudentsController < ApplicationController
   end
 
   def enrollment
-    @tcs_evaluation = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(:term_students=>{:student_id=>current_user.id},:status=>1).where("term_course_students.teacher_evaluation=? AND (courses.notes not like '%[AI]%' OR courses.notes is null) AND terms.name like ?",false,"%#{$YEAR}%")
-
-    if @tcs_evaluation.size>0
+    if @TCS.size>0
       redirect_to :controller=>'home', :action=>'index' and return
     end
 
