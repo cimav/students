@@ -279,7 +279,13 @@ class StudentsController < ApplicationController
       ## Nos traemos el plan de estudios
       @plan_estudios        = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term not in (99,100)").order(:term)
       @optativas_requeridas = Course.where(:program_id=>@student.program.id,:studies_plan_id=>@student.studies_plan_id).where("term not in (99,100) AND courses.name like '%Optativa%'").size
-      @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term in (?)",70,[99,100])
+
+
+      if @student.studies_plan_id.eql? 15
+        @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.program_id!=? AND courses.studies_plan_id!=?",70,2,15)
+      else
+        @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term in (?)",70,[99,100])
+      end
       @alternativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term not in (?) AND courses.program_id!=?",70,[99,100],@student.program.id)
       @optativas_total = @optativas_cursadas.size + @alternativas_cursadas.size
       @materias_faltantes = []
@@ -334,8 +340,13 @@ class StudentsController < ApplicationController
       @tcs = TermCourse.joins(:term=>:program).joins(:course).where(:courses=>{:studies_plan_id=>@student.studies_plan_id},:programs=>{:id=>@student.program.id},:terms=>{:status=>1})
       @tcs = @tcs.where("terms.id=? AND courses.id not in (?) AND courses.term<=?",@e_term.id,@scourses,@maxterm+1).order("courses.program_id")
 
+      @tcs.each do |tc|
+        logger.info "##########################COURSES#{tc.course.id}#### #{tc.course.name}"
+      end
+
       # agregamos los id de los cursos en el mapa de scourses
       @scourses += @tcs.map {|i| i.course_id}
+      logger.info "##########################SCOURSES3: #{@scourses}"
 
       ## Obtenemos todos los cursos para el resto de los programas
       if @student.program.level.to_i.eql? 2
@@ -354,6 +365,8 @@ class StudentsController < ApplicationController
       @cs = Course.where("program_id=? AND term<=? AND id not in (?)",@student.program.id,@maxterm+1,@scourses)
       # obtenemos la cantidad de optativas que ya han sido aprobadas
       @optativas = TermCourse.joins(:term_course_student=>:term_student).joins(:course).where("term_students.student_id=? AND courses.program_id=? AND term_course_students.grade>=? AND courses.term in (?)",@student.id,@student.program.id,70,[99,100])
+      
+      logger.info "##########################OPTATIVAS#### #{@optativas.size} "
       @soptativas = @optativas.map{|i| i.course_id}
       # ahora las optativas que faltan para el programa
       @soptativas << 0
