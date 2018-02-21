@@ -291,7 +291,6 @@ class StudentsController < ApplicationController
       @materias_faltantes = []
 
       if @student.studies_plan_id.eql? 15
-        @condemned = nil
         @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id]}
 
         @temas_selectos = @plan_estudios.where("name like '%Temas Selectos%'").order(:term)
@@ -302,6 +301,18 @@ class StudentsController < ApplicationController
           opc_counter = opc_counter + 1
         end# @optativas_cursadas_map
       end ## if
+
+      if @student.studies_plan_id.eql? 18 ## Para las materias de especializacion de MCM
+        @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id]}
+        
+        @especializacion = @plan_estudios.where("name like '%Asignatura de especializaci%'").order(:term)
+        opc_counter = 0
+        @optativas_cursadas_map.each do |oc|
+          @scourses << @especializacion[opc_counter].id
+          opc_counter = opc_counter + 1
+        end# @optativas_cursadas_map
+      
+      end
 
       puts "SCOURSES2: #{@scourses}"
       @plan_estudios.each do |c|
