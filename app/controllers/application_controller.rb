@@ -46,10 +46,15 @@ class ApplicationController < ActionController::Base
     remove = Array.new
     @TCS.each do |tcs|
       if tcs.term_course.term.name.include? 'Revalida'
-         @TCS.delete(tcs)
+        remove << tcs
       end
     end
+
+    remove.each do |r|
+      @TCS.delete(r)
+    end
   end
+
 private
 def current_user
   @current_user ||= Student.find(session[:user_id]) if session[:user_id]
