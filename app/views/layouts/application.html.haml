@@ -40,10 +40,10 @@
               %br
               %br
               %center
-                -# if @student.image_url.nil?
+                - if @student.image_url.nil?
                   %div{:style=>"width:200px;height:200px;border: 0px solid #EEEEEE"}
                     = image_tag "http://posgrado.cimav.edu.mx/assets/student/fallback/default.jpg", :id => "img-student-#{@student.id}", :class=> "img-circle", :width=>"200px", :height=>"200px", :alt=>"Buscando imagen...", :align=>"center"
-                -# else
+                - else
                   %div{:style=>"width:200px;height:200px;border: 0px solid #EEEEEE"}
                     = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url}", :id => "img-student-#{@student.id}", :class=> "img-circle", :width=>"200px", :height=>"200px", :alt=>"Buscando imagen...", :align=>"center"
                 %br
@@ -62,9 +62,9 @@
                   %a.menu{'href' => "/calificaciones"}= "  Calificaciones"
                 %li{:class => active_class("/kardex/#{@student.id}")}
                   %a.menu{'href' => "/kardex/#{@student.id}"}= "  Kardex"
-                -# %li{:class => active_class("/avances")}
+                %li{:class => active_class("/avances")}
                   %a.menu{'href' => "/avances"}= "  Avances"
-                -# %li{:class => active_class("/servicios/#{@student.id}")}
+                %li{:class => active_class("/servicios/#{@student.id}")}
                   %a.menu{'href' => "/servicios/#{@student.id}"}= "  Servicios"
                 - if @TCS.size.eql? 0
                   %li{:class => active_class("/inscripcion/cimav")}
