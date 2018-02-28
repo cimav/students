@@ -1,91 +1,85 @@
-- if @TCS.size > 0
-  .alert.alert-warning{:role=>"alert"}
-    %strong="Para tener acceso a la inscripción debes contestar todas las evaluaciones docentes!!!"
+.row
+  .col-md-9
+    .panel.panel-default
+      .panel-heading Calendario
+      .panel-body
+        %iframe{:frameborder => "0", :height => "600", :scrolling => "no", :src => "https://calendar.google.com/calendar/embed?src=cimav.edu.mx_uemi228msvn0gn5bka7av5c2m4%40group.calendar.google.com&ctz=America%2FMazatlan", :style => "border: 0", :width => "800"}
+    .panel.panel-default
+      .panel-heading Datos Académicos
+      .panel-body
+        %p
+          %b= "Matricula: "
+          = @student.card
+        %p
+          %b= "Tiempo estudiante: "
+          = "#{@year} #{@text_year} #{@month} #{@text_month}"
+        %p
+          %b= "Ciclos Cursados (Ciclos Totales):"
+          - tcs_size = @student.term_students.size
+          - if tcs_size > @student.program.terms_qty
+            %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
+          - else
+            = "#{tcs_size} (#{@student.program.terms_qty})"
+        %p
+          %b= "Asesor:"
+          = @asesor
+        %p
+          %b= "Coasesor:" 
+          = @coasesor
+        %p
+          %b= "Fecha de inicio:"
+          = @student.start_date
+        %p
+          %b= "CVU:"
+          = @student.cvu
+        %p
+          %b= "Campus:" 
+          = @student.campus.blank? ? "No disponible" : @student.campus.name
+        %p
+          %b= "Ubicación:"
+          = @student.location
+        %p
+          %b= "Grado Anterior:"
+          = "#{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
 
-%br
-%h2= "Datos personales"
-%table.table.table-striped
-  %tbody
-    %tr
-      %td= "Sexo: "
-      %td
-        - if @student.gender=='F'
-          = "Mujer"
-        - if @student.gender=='H'
-          = "Hombre"
-    %tr
-      %td= "Lugar de nacimiento: "
-      %td
-        = @student.city.blank? ? "No disponible" : @student.city
-        = ","
-        = @student.state.blank? ? "No disponible" : @student.state.name
-        = ","
-        = @student.country.blank? ? "No disponible" : @student.country.name
-    %tr
-      %td= "Dirección:"
-      %td= @student.contact.blank? ? "No disponible" : @student.contact.address1
-    %tr
-      %td= "IFE:" 
-      %td=@student.ife
-    %tr
-      %td="CURP:"
-      %td=@student.curp
-    %tr
-      %td="Contacto en caso de accidente:"
-      %td="#{@student.accident_contact} (#{@student.accident_phone})"
-    %tr
-      %td="Seguridad Social:" 
-      %td=@student.ssn
-    %tr
-      %td= "Tipo de sangre:"
-      %td= @student.blood_type
-    %tr
-      %td= "Pasaporte: " 
-      %td= @student.passport.blank? ? "No disponible" : @student.passport
-    %tr
-      %td= "Email:"
-      %td= @student.email
-
-%br
-%h2= "Datos académicos"
-%table.table.table-striped
-  %tbody
-    %tr
-      %td= "Matricula: "
-      %td= @student.card
-    %tr
-      %td= "Tiempo estudiante: "
-      %td= "#{@year} #{@text_year} #{@month} #{@text_month}"
-    %tr
-      %td= "Ciclos Cursados (Ciclos Totales):"
-      %td
-        - tcs_size = @student.term_students.size
-        - if tcs_size > @student.program.terms_qty
-          %span{:style=>"color: red;"} #{tcs_size} (#{@student.program.terms_qty})
-        - else
-          = "#{tcs_size} (#{@student.program.terms_qty})"
-    %tr
-      %td= "Asesor:"
-      %td= @asesor
-    %tr
-      %td= "Coasesor:" 
-      %td= @coasesor
-    %tr
-      %td= "Fecha de inicio:"
-      %td= @student.start_date
-    %tr
-      %td= "CVU:"
-      %td= @student.cvu
-    %tr
-      %td= "Campus:" 
-      %td= @student.campus.blank? ? "No disponible" : @student.campus.name
-    %tr
-      %td= "Ubicación:"
-      %td= @student.location
-    %tr
-      %td= "Grado Anterior:"
-      %td= "#{@student.previous_institution} #{@student.previous_degree_type} #{@student.previous_degree_desc} #{@student.previous_degree_date}"
-
-%br
-%strong= "NOTA: Si algún dato esta equivocado por favor comunicarse a la oficina de posgrado para su corrección"
-
+  .col-md-3
+    .panel.panel-default
+      .panel-heading Datos personales
+      .panel-body
+        %p
+          %b Sexo:
+          - if @student.gender=='F'
+            = "Mujer"
+          - if @student.gender=='H'
+            = "Hombre"
+        %p
+          %b Lugar de nacimiento:
+          = @student.city.blank? ? "No disponible" : @student.city
+          = ","
+          = @student.state.blank? ? "No disponible" : @student.state.name
+          = ","
+          = @student.country.blank? ? "No disponible" : @student.country.name
+        %p
+          %b Dirección:
+          = @student.contact.blank? ? "No disponible" : @student.contact.address1
+        %p
+          %b= "IFE:" 
+          =@student.ife
+        %p
+          %b="CURP:"
+          =@student.curp
+        %p
+          %b="Contacto en caso de accidente:"
+          ="#{@student.accident_contact} (#{@student.accident_phone})"
+        %p
+          %b="Seguridad Social:" 
+          =@student.ssn
+        %p
+          %b= "Tipo de sangre:"
+          = @student.blood_type
+        %p
+          %b= "Pasaporte: " 
+          = @student.passport.blank? ? "No disponible" : @student.passport
+        %p
+          %b= "Email:"
+          = @student.email
