@@ -24,7 +24,7 @@ Students::Application.routes.draw do
   match '/inscripcion/alumno/:tcs_id' => 'students#endrollment'
   match '/inscripcion/folio/:folio' => 'students#check_folio'
  
-  match '/servicios/:id' => 'home#services'
+  match '/servicios' => 'home#services'
 
   match '/alumnos/inscripcion/materias/:id' => 'students#enrollment_courses'
   match '/alumnos/inscripcion/' => 'students#assign_courses'
