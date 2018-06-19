@@ -73,8 +73,7 @@
             .col-md-8
           - break
         - if ts.term.advance_start_date <= Date.today and Date.today <= ts.term.advance_end_date
-          - @protocol     = Advance.where(:student_id=>@student.id,:advance_type=>Advance::PROTOCOL).where("advance_date between ? and ?",ts.term.start_date,ts.term.end_date)
-          - advance_date_flag = 1
+          - @protocol     = Advance.where(:student_id=>@student.id).where("advance_date between ? and ?",ts.term.start_date,ts.term.end_date)
           .row
             .col-md-4
               %h4= "Ciclo: #{ts.term.name}"
@@ -83,8 +82,9 @@
         - counter = 0
         .row
           .col-md-12
-            =# @protocol[0].id
-            - if !@protocol.nil?
+            =# @protocol.size
+            - if @protocol.size > 0
+              - advance_date_flag = 1
               - if @protocol[0].advance_type.eql? 2 ## protocolo
                 - saf_type = 3  ## protocolo
               - else # cualquier otro es semestral (los intersemestrales fueron descontinuados a partir de 2017-2 si no me equivoco
