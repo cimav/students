@@ -72,8 +72,11 @@
                 %b= "No hay fechas definidas para este ciclo"
             .col-md-8
           - break
+
         - if ts.term.advance_start_date <= Date.today and Date.today <= ts.term.advance_end_date
-          - @protocol     = Advance.where(:student_id=>@student.id).where("advance_date between ? and ?",ts.term.start_date,ts.term.end_date)
+          - @protocol     = Advance.where(:student_id=>@student.id).where("advance_date between ? and ?",ts.term.start_date,ts.term.end_date+1)
+        - else
+          - @protocol = []
           .row
             .col-md-4
               %h4= "Ciclo: #{ts.term.name}"
