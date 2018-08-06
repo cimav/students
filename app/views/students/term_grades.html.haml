@@ -189,8 +189,7 @@
         %b= @p_advances.title rescue ""
       .panel-collapse.collapse{:id=>"collapseOne",:role=>"tabpanel","aria-labelledby"=>"headingOne"}
         .panel-body
-          %pre 
-            = @notas
+          = text_area_tag 'notes1', @notas, :class=>"form-control", :rows=>"10", :readonly=>true
 
     - @notas = @advances.notes rescue ""
     .panel.panel-default
@@ -203,8 +202,7 @@
           %font#glyp2-font= "Ver"
       .panel-collapse.collapse{:id=>"collapseTwo",:role=>"tabpanel","aria-labelledby"=>"headingTwo"}
         .panel-body
-          %pre
-            = @notas
+          = text_area_tag 'notes2', @notas, :class=>"form-control", :rows=>"10", :readonly=>true
 
 .row
   - if !@advances.nil?
