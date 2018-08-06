@@ -189,7 +189,8 @@
         %b= @p_advances.title rescue ""
       .panel-collapse.collapse{:id=>"collapseOne",:role=>"tabpanel","aria-labelledby"=>"headingOne"}
         .panel-body
-          = @notas
+          %pre 
+            = @notas
 
     - @notas = @advances.notes rescue ""
     .panel.panel-default
@@ -202,7 +203,8 @@
           %font#glyp2-font= "Ver"
       .panel-collapse.collapse{:id=>"collapseTwo",:role=>"tabpanel","aria-labelledby"=>"headingTwo"}
         .panel-body
-          = @notas
+          %pre
+            = @notas
 
 .row
   - if !@advances.nil?

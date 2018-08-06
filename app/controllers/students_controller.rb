@@ -65,9 +65,9 @@ class StudentsController < ApplicationController
       @p_advances = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@p_term.start_date,@p_term.end_date).last
     end
 
-    @advances   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@term.start_date,@term.end_date).last
-    @protocol   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=2",@student.id,@term.start_date,@term.end_date)
-    @seminar    = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=3",@student.id,@term.start_date,@term.end_date)
+    @advances   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=1",@student.id,@term.start_date,@term.end_date+1).last
+    @protocol   = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=2",@student.id,@term.start_date,@term.end_date+1)
+    @seminar    = Advance.where("student_id=? AND advance_date between ? AND ? AND advance_type=3",@student.id,@term.start_date,@term.end_date+1)
 
     if !@advances.nil?
       if @advances.status.eql? "C"
