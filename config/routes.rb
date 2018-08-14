@@ -31,6 +31,8 @@ Students::Application.routes.draw do
   match '/alumnos/protocolo/:id/:staff_id' => 'students#get_protocol'
   match '/alumnos/seminario/:id/:staff_id' => 'students#get_protocol'
 
+  match '/evaluacion/:tcs_id'   => 'teacher_evaluations#new'
+
   resources :student_advances_file_messages, :path=>'/avances/mensajes'
   scope(:path_names => { :new => "nuevo", :edit => "editar" }) do
     resources :teacher_evaluations,:path=>"evaluacion"

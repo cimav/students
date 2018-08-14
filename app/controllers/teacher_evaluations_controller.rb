@@ -1,10 +1,9 @@
 
 class TeacherEvaluationsController < ApplicationController
   before_filter :auth_required
-  before_filter :news
+  before_filter :only => [:index] do |c| c.news 2 end
+  before_filter :only => [:show,:new,:create] do |c| c.news 1 end
 
-  $YEAR = "2017-2"
-  
   respond_to :html, :xml, :json
 
   def index
@@ -12,22 +11,16 @@ class TeacherEvaluationsController < ApplicationController
   end
 
   def show
-    redirect_to :action=>:new, :tcs_id=>params[:id]
+    
   end
 
   def new
-    @this_tcs = TermCourseStudent.joins(:term_student).where(:id=>params[:tcs_id],:term_students=>{:student_id=>current_user.id})
+    @this_tcs = TermCourseSchedule.where(:id=>params[:tcs_id])
   end
 
   def create
     @teacher_evaluation = TeacherEvaluation.new(params[:teacher_evaluation])
-    #@this_tcs = TermCourseStudent.joins(:term_student).where(:id=>params[:tcs_id],:term_students=>{:student_id=>current_user.id})
-
     if @teacher_evaluation.save
-      my_tcs = TermCourseStudent.find(params[:tcs_id])
-      my_tcs.teacher_evaluation = true
-      my_tcs.save
-
       redirect_to :action=>:index
     end
   end

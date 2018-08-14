@@ -1,12 +1,10 @@
 # coding: utf-8
 class StudentsController < ApplicationController
   before_filter :auth_required
-  before_filter :news
+  before_filter {|c| c.news 1}
 
   respond_to :html, :xml, :json
-  $CICLO = "2017-2"
-  $NCICLO = "2018-1"
-  $YEAR = "2017-2"
+
 
   def kardex
     @screen="kardex"

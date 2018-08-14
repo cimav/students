@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
   before_filter :auth_required
-  before_filter :news
+  before_filter {|c| c.news 1}
 
   respond_to :html, :json
 

@@ -1,5 +1,5 @@
 class TeacherEvaluation < ActiveRecord::Base
-  attr_accessible :id,:staff_id,:term_course_id,:question1,:question2,:question3,:question4,:question5,:question6,:question7,:question8,:question9,:question10,:question11,:question12,:created_at,:updated_at
+  attr_accessible :id,:staff_id,:term_course_id,:question1,:question2,:question3,:question4,:question5,:question6,:question7,:question8,:question9,:question10,:question11,:question12,:created_at,:updated_at,:notes
 
   belongs_to :staff
   belongs_to :term_course
