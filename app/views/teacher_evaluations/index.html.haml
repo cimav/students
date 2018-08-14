@@ -1,13 +1,21 @@
 %h2 Evaluaciones
+- teachers = Array.new
 
 - if @TCS.size>0
   .list-group
-  - @TCS.each do |t|
-    - if t.teacher_evaluation.eql? false
-      %a.list-group-item.list-group-item-action{:href=>"evaluacion/#{t.id}"}
-        %b= t.term_course.course.name
-        = t.term_course.staff.full_name rescue "N.D"
-        = t.term_course.course.notes
-        = t.term_course.term.name
+
+  - @TCS.each do |tcs|
+    - if !(teachers.include? tcs.staff_id)
+      %a.list-group-item.list-group-item-action{:href=>"/evaluacion/#{tcs.id}"}
+        %b= "#{tcs.term_course.course.name} "
+        %br
+        = "Titular: #{tcs.term_course.staff.full_name rescue "N.D"}"
+        %br
+        = tcs.term_course.term.name
+        %h4= "#{tcs.staff.full_name rescue "N.D"}"
+        - teachers.push(tcs.staff_id)
+     
+  
+  - $TEACHER_EVALUATIONS = teachers.size
 - else
   %h3= "No hay evaluaciones pendientes"

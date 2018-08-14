@@ -72,8 +72,8 @@
                 %li{:class => active_class("/inscripcion/cimav")}
                   %a.menu{'href' => "/evaluacion"}
                     = "  Evaluación Docente"
-                    - if @TCS.size > 0
-                      %span.badge{:style=>"background-color: #dc3545"}=@TCS.size
+                    - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
+                      %span.badge{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
 
           .col-md-10.content
             .container

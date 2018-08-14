@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
+  $CICLO  = "2018-1"   #ciclo escolar anterior
+  $NCICLO = "2018-2"  #nuevo ciclo
+
   def not_found
     raise ActionController::RoutingError.new('Not Found')
   end
@@ -39,25 +42,36 @@ class ApplicationController < ActionController::Base
     session.delete(:forwarding_url)
   end
 
-  def news
-    @student = Student.find(current_user.id)
-    @TCS     = TermCourseStudent.joins(:term_student=>:term).joins(:term_course=>:course).where(:term_students=>{:student_id=>current_user.id},:status=>1).where("term_course_students.teacher_evaluation=? AND (courses.notes not like '%[AI]%' OR courses.notes is null) AND terms.name like ?",false,"%#{$YEAR}%")
-    @TCS = @TCS.to_a
-    remove = Array.new
-    @TCS.each do |tcs|
-      if tcs.term_course.term.name.include? 'Revalida'
-        remove << tcs
-      end
+  def news(option)
+    @student  = Student.find(current_user.id)
+    
+    j_hash0   = {:term_course=>:term_course_students}
+    joins0    = "INNER JOIN term_students ON term_students.id=term_course_students.term_student_id"
+    joins1    = "INNER JOIN courses ON courses.id= term_courses.course_id"
+    joins2    = "INNER JOIN terms ON terms.id= term_courses.term_id"
+    joins3    = "LEFT JOIN teacher_evaluations ON teacher_evaluations.staff_id=term_course_schedules.staff_id AND teacher_evaluations.term_course_id= term_course_schedules.term_course_id"
+    ## juntamos todos los joins con un gsub para no andarnos preocupando por los espacios antes o despues
+    j         = joins0.gsub(/^/," ")+joins1.gsub(/^/," ")+joins2.gsub(/^/," ")+joins3.gsub(/^/," ")
+    where0    = "term_students.student_id=?"
+    where1    = "AND (courses.notes not like '%[AI]%' OR courses.notes is null)"
+    where2    = "AND terms.name like '%#{$CICLO}%'"
+    where3    = "AND teacher_evaluations.id is null"
+    ## juntamos todos los where con un gsub para no andarnos preocupando por los espacios antes o despues
+    w_all     = where0.gsub(/^/," ")+where1.gsub(/^/," ")+where2.gsub(/^/," ")+where3.gsub(/^/," ")
+    values    = current_user.id
+  
+    if option.eql? 1  ## solo cuenta
+      @TCS = TermCourseSchedule.select("distinct term_course_schedules.staff_id").joins(j_hash0).joins(j).where(w_all,values)
+    elsif option.eql? 2  ## se trae los datos
+      @TCS = TermCourseSchedule.joins(j_hash0).joins(j).where(w_all,values)
     end
 
-    remove.each do |r|
-      @TCS.delete(r)
-    end
+    $TEACHER_EVALUATIONS   = @TCS.size
   end
 
 private
-def current_user
-  @current_user ||= Student.find(session[:user_id]) if session[:user_id]
-end
+  def current_user
+    @current_user ||= Student.find(session[:user_id]) if session[:user_id]
+  end
 
 end
