@@ -54,7 +54,16 @@
                 %br
                 %br
               %ul.nav.nav-pills.nav-stacked
-                %li{:class => active_class(root_path)}
+                %li{:class => active_class("/evaluacion")}
+                  %a.menu{'href' => "/evaluacion"}
+                    = "  Evaluación Docente"
+                    - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
+                      -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
+                      %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
+                -# if @TCS.size.eql? 0
+                  %li{:class => active_class("/inscripcion/cimav")}
+                    %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
+                -#%li{:class => active_class(root_path)}
                   %a.menu{'href' => "/"}= "  Inicio"
                 %li{:class => active_class("/horarios/#{@student.id}/0")}
                   %a.menu{'href' => "/horarios/#{@student.id}/0"}= "  Horarios"
@@ -66,14 +75,8 @@
                   %a.menu{'href' => "/avances"}= "  Avances"
                 %li{:class => active_class("/servicios")}
                   %a.menu{'href' => "/servicios"}= "  Servicios"
-                - if @TCS.size.eql? 0
-                  %li{:class => active_class("/inscripcion/cimav")}
-                    %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
-                %li{:class => active_class("/inscripcion/cimav")}
-                  %a.menu{'href' => "/evaluacion"}
-                    = "  Evaluación Docente"
-                    - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
-                      %span.badge{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
+                
+                
 
           .col-md-10.content
             .container
