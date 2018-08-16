@@ -302,3 +302,31 @@ body
       color: #f4f1f3 !important
       &:hover, &:focus
         background-color: #FF9901 !important
+
+
+#main-container
+  padding: 3em
+  display: grid
+  grid-gap: 2em
+  grid-template-areas: 'sidebar' 'main-content'
+
+  #sidebar
+    display: none
+    img
+      width: 80%
+
+      grid-area: sidebar
+      border-radius: 50%
+    h5
+      grid-area: main-content
+      text-align: center
+      font-weight: bold
+
+@media only screen and (min-width: 768px)
+  #main-container
+    grid-template-areas: 'sidebar main-content'
+
+    #sidebar
+      display: block
+  .hide-on-m
+    display: none !important

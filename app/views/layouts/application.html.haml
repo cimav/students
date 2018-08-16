@@ -25,60 +25,70 @@
 
             %a.navbar-brand{:href=>"/"} Alumnos CIMAV
           #bs-example-navbar-collapse-1.collapse.navbar-collapse
-            %ul.nav.navbar-nav
             %ul.nav.navbar-nav.navbar-right
+
+              -# if @TCS.size.eql? 0
+                %li.hide-on-m{:class => active_class("/inscripcion/cimav")}
+                  %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
+              %li.hide-on-m{:class => active_class(root_path)}
+                %a.menu{'href' => "/"}= "  Inicio"
+              %li.hide-on-m{:class => active_class("/horarios/#{@student.id}/0")}
+                %a.menu{'href' => "/horarios/#{@student.id}/0"}= "  Horarios"
+              %li.hide-on-m{:class => active_class("/calificaciones")}
+                %a.menu{'href' => "/calificaciones"}= "  Calificaciones"
+              %li.hide-on-m{:class => active_class("/kardex/#{@student.id}")}
+                %a.menu{'href' => "/kardex/#{@student.id}"}= "  Kardex"
+              %li.hide-on-m{:class => active_class("/avances")}
+                %a.menu{'href' => "/avances"}= "  Avances"
+              %li.hide-on-m{:class => active_class("/servicios")}
+                %a.menu{'href' => "/servicios"}= "  Servicios"
+              %li.hide-on-m{:class => active_class("/evaluacion")}
+                %a.menu{'href' => "/evaluacion"}
+                  = "  Evaluación Docente"
+                  - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
+                    -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
+                    %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
               %li
                 %a{:href => "/logout"}
                   %span.glyphicon.glyphicon-log-out
                   salir
 
-      .container-fluid{:style=>"padding-left: 30px;"}
-        .row.content
-          .col-md-2.sidebar-nav-fixed
-            .sidebar-nav-fixed.affix
-              %br
-              %br
-              %br
-              %center
-                - if @student.image_url.nil?
-                  %div{:style=>"width:200px;height:200px;border: 0px solid #EEEEEE"}
-                    = image_tag "http://posgrado.cimav.edu.mx/assets/student/fallback/default.jpg", :id => "img-student-#{@student.id}", :class=> "img-circle", :width=>"200px", :height=>"200px", :alt=>"Buscando imagen...", :align=>"center"
-                - else
-                  %div{:style=>"width:200px;height:200px;border: 0px solid #EEEEEE"}
-                    = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url}", :id => "img-student-#{@student.id}", :class=> "img-circle", :width=>"200px", :height=>"200px", :alt=>"Buscando imagen...", :align=>"center"
-                %br
-                %strong= "#{@student.full_name}"
-                %br
-                %br
-                %strong= "#{@student.program.name}"
-                %br
-                %br
-              %ul.nav.nav-pills.nav-stacked
-                %li{:class => active_class("/evaluacion")}
-                  %a.menu{'href' => "/evaluacion"}
-                    = "  Evaluación Docente"
-                    - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
-                      -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
-                      %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
-                -# if @TCS.size.eql? 0
-                  %li{:class => active_class("/inscripcion/cimav")}
-                    %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
-                -#%li{:class => active_class(root_path)}
-                  %a.menu{'href' => "/"}= "  Inicio"
-                %li{:class => active_class("/horarios/#{@student.id}/0")}
-                  %a.menu{'href' => "/horarios/#{@student.id}/0"}= "  Horarios"
-                %li{:class => active_class("/calificaciones")}
-                  %a.menu{'href' => "/calificaciones"}= "  Calificaciones"
-                %li{:class => active_class("/kardex/#{@student.id}")}
-                  %a.menu{'href' => "/kardex/#{@student.id}"}= "  Kardex"
-                %li{:class => active_class("/avances")}
-                  %a.menu{'href' => "/avances"}= "  Avances"
-                %li{:class => active_class("/servicios")}
-                  %a.menu{'href' => "/servicios"}= "  Servicios"
-                
-                
+    #main-container.hidden-sm-down
+      #sidebar
+        %center
+          - if @student.image_url.nil?
+            %div{:style=>"width:200px;height:200px;border: 0px solid #EEEEEE"}
+              = image_tag "http://posgrado.cimav.edu.mx/assets/student/fallback/default.jpg", :id => "img-student-#{@student.id}", :alt=>"Buscando imagen...", :align=>"center"
+          - else
+            %div{:style=>"width:200px;height:200px;border: 0px solid #EEEEEE"}
+              = image_tag "http://posgrado.cimav.edu.mx/#{@student.image_url}", :id => "img-student-#{@student.id}", :alt=>"Buscando imagen...", :align=>"center"
+        %h5= "#{@student.full_name}"
+        %h5= "#{@student.program.name}"
+        %ul.nav.nav-pills.nav-stacked
 
-          .col-md-10.content
-            .container
-              = yield
+          -# if @TCS.size.eql? 0
+            %li{:class => active_class("/inscripcion/cimav")}
+              %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
+          %li{:class => active_class(root_path)}
+            %a.menu{'href' => "/"}= "  Inicio"
+          %li{:class => active_class("/horarios/#{@student.id}/0")}
+            %a.menu{'href' => "/horarios/#{@student.id}/0"}= "  Horarios"
+          %li{:class => active_class("/calificaciones")}
+            %a.menu{'href' => "/calificaciones"}= "  Calificaciones"
+          %li{:class => active_class("/kardex/#{@student.id}")}
+            %a.menu{'href' => "/kardex/#{@student.id}"}= "  Kardex"
+          %li{:class => active_class("/avances")}
+            %a.menu{'href' => "/avances"}= "  Avances"
+          %li{:class => active_class("/servicios")}
+            %a.menu{'href' => "/servicios"}= "  Servicios"
+          %li{:class => active_class("/evaluacion")}
+            %a.menu{'href' => "/evaluacion"}
+              = "  Evaluación Docente"
+              - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
+                -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
+                %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
+
+
+      #main-content
+        = yield
 
