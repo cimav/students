@@ -2,7 +2,7 @@
   - if @this_tcs.size.eql? 0
     = "No hay registros"
   - else 
-    - if TeacherEvaluation.where(:term_course_id=>@this_tcs[0].term_course_id,:staff_id=>@this_tcs[0].staff_id).size > 0
+    - if StudentTeacherEvaluation.where(:term_course_id=>@this_tcs[0].term_course_id,:staff_id=>@this_tcs[0].staff_id,:student_id=>current_user.id).size > 0
       = "Esta evaluación ya fue contestada"
     - else
       - s = Staff.find(@this_tcs[0].staff_id)

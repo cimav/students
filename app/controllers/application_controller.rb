@@ -49,13 +49,13 @@ class ApplicationController < ActionController::Base
     joins0    = "INNER JOIN term_students ON term_students.id=term_course_students.term_student_id"
     joins1    = "INNER JOIN courses ON courses.id= term_courses.course_id"
     joins2    = "INNER JOIN terms ON terms.id= term_courses.term_id"
-    joins3    = "LEFT JOIN teacher_evaluations ON teacher_evaluations.staff_id=term_course_schedules.staff_id AND teacher_evaluations.term_course_id= term_course_schedules.term_course_id"
+    joins3    = "LEFT JOIN student_teacher_evaluations ON student_teacher_evaluations.staff_id=term_course_schedules.staff_id AND student_teacher_evaluations.term_course_id= term_course_schedules.term_course_id AND student_teacher_evaluations.student_id=term_students.student_id"
     ## juntamos todos los joins con un gsub para no andarnos preocupando por los espacios antes o despues
     j         = joins0.gsub(/^/," ")+joins1.gsub(/^/," ")+joins2.gsub(/^/," ")+joins3.gsub(/^/," ")
     where0    = "term_students.student_id=?"
     where1    = "AND (courses.notes not like '%[AI]%' OR courses.notes is null)"
     where2    = "AND terms.name like '%#{$CICLO}%'"
-    where3    = "AND teacher_evaluations.id is null"
+    where3    = "AND student_teacher_evaluations.id is null"
     ## juntamos todos los where con un gsub para no andarnos preocupando por los espacios antes o despues
     w_all     = where0.gsub(/^/," ")+where1.gsub(/^/," ")+where2.gsub(/^/," ")+where3.gsub(/^/," ")
     values    = current_user.id
