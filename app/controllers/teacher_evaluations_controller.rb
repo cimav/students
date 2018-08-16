@@ -21,6 +21,11 @@ class TeacherEvaluationsController < ApplicationController
   def create
     @teacher_evaluation = TeacherEvaluation.new(params[:teacher_evaluation])
     if @teacher_evaluation.save
+      ste = StudentTeacherEvaluation.new
+      ste.staff_id= @teacher_evaluation.staff_id
+      ste.term_course_id = @teacher_evaluation.term_course_id
+      ste.student_id = current_user.id
+      ste.save
       redirect_to :action=>:index
     end
   end
