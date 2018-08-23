@@ -26,10 +26,6 @@
             %a.navbar-brand{:href=>"/"} Alumnos CIMAV
           #bs-example-navbar-collapse-1.collapse.navbar-collapse
             %ul.nav.navbar-nav.navbar-right
-
-              -# if @TCS.size.eql? 0
-                %li.hide-on-m{:class => active_class("/inscripcion/cimav")}
-                  %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
               %li.hide-on-m{:class => active_class(root_path)}
                 %a.menu{'href' => "/"}= "  Inicio"
               %li.hide-on-m{:class => active_class("/horarios/#{@student.id}/0")}
@@ -48,6 +44,9 @@
                   - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
                     -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
                     %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
+              %li.hide-on-m{:class => active_class("/inscripcion/cimav")}
+                - my_time = Time.now
+                %a.menu{'href' => "/inscripcion/cimav"}= "Inscripcion #{my_time}"
               %li
                 %a{:href => "/logout"}
                   %span.glyphicon.glyphicon-log-out
@@ -66,9 +65,6 @@
         %h5= "#{@student.program.name}"
         %ul.nav.nav-pills.nav-stacked
 
-          -# if @TCS.size.eql? 0
-            %li{:class => active_class("/inscripcion/cimav")}
-              %a.menu{'href' => "/inscripcion/cimav"}= "  Inscripcion"
           %li{:class => active_class(root_path)}
             %a.menu{'href' => "/"}= "  Inicio"
           %li{:class => active_class("/horarios/#{@student.id}/0")}
@@ -87,7 +83,11 @@
               - if !(($TEACHER_EVALUATIONS.nil?) || ($TEACHER_EVALUATIONS.eql? 0))
                 -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
                 %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
-
+          - my_time   = Time.now
+          - your_time = Time.new(2018,8,23,22,45,00)
+          - if my_time < your_time
+            %li{:class => active_class("/inscripcion/cimav")}    
+              %a.menu{'href' => "/inscripcion/cimav"}= "Inscripcion"
 
       #main-content
         = yield
