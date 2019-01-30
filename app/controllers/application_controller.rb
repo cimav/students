@@ -2,8 +2,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
-  $CICLO  = "2018-1"   #ciclo escolar anterior
-  $NCICLO = "2018-2"  #nuevo ciclo
+  $CICLO  = "2018-2"   #ciclo escolar anterior
+  $NCICLO = "2019-1"  #nuevo ciclo
 
   def not_found
     raise ActionController::RoutingError.new('Not Found')
