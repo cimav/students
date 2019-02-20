@@ -84,7 +84,7 @@
                 -#%span.badge.badge-light{:style=>"background-color: #dc3545"}=$TEACHER_EVALUATIONS
                 %span.badge.badge-pill.badge-warning=$TEACHER_EVALUATIONS
           - my_time   = Time.now
-          - your_time = Time.new(2018,8,23,22,45,00)
+          - your_time = Time.new(2019,8,23,22,45,00)
           - if my_time < your_time
             %li{:class => active_class("/inscripcion/cimav")}    
               %a.menu{'href' => "/inscripcion/cimav"}= "Inscripcion"
