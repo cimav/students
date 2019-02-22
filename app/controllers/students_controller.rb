@@ -282,36 +282,48 @@ class StudentsController < ApplicationController
 
       if @student.studies_plan_id.eql? 15
         @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.program_id!=? AND courses.studies_plan_id!=?",70,2,15)
+      elsif @student.studies_plan_id.eql? 17
+        @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term in (?)",70,[99,100])
       else
         @optativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term in (?)",70,[99,100,101])
       end
+
       @alternativas_cursadas   = @stc.joins(:course).where(:term_students=>{:student_id=>@student.id}).where("term_course_students.grade>=? AND courses.term not in (?) AND courses.program_id!=?",70,[99,100,101],@student.program.id)
       @optativas_total = @optativas_cursadas.size + @alternativas_cursadas.size
+
       @materias_faltantes = []
 
       if @student.studies_plan_id.eql? 15
-        @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id]}
+        @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id,i.course.name]}
 
         @temas_selectos = @plan_estudios.where("name like '%Temas Selectos%'").order(:term)
 
         opc_counter = 0
+        puts "OPTATIVAS CURSADAS:"
         @optativas_cursadas_map.each do |oc|
+          puts "#{oc[2]}"
           @scourses << @temas_selectos[opc_counter].id
           opc_counter = opc_counter + 1
         end# @optativas_cursadas_map
       end ## if
 
-      if @student.studies_plan_id.eql? 18 ## Para las materias de especializacion de MCM
-        @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id]}
+      if @student.studies_plan_id.in? [17,18] ## Para las materias de especializacion de MCM y MCTA
+        @optativas_cursadas_map = @optativas_cursadas.map{|i| [i.id,i.course.program_id,i.course.name]}
         
         @especializacion = @plan_estudios.where("name like '%Asignatura de especializaci%'").order(:term)
         opc_counter = 0
         @optativas_cursadas_map.each do |oc|
-          @scourses << @especializacion[opc_counter].id
+          puts "#{oc[2]}"
+          sp_id = @especializacion[opc_counter].id rescue nil
+          if !sp_id.nil?
+            puts "- #{@especializacion[opc_counter]}"
+            @scourses << @especializacion[opc_counter].id
+          else
+            puts "- vacio"
+          end
           opc_counter = opc_counter + 1
         end# @optativas_cursadas_map
-      
-      end
+      end ## if 
 
       puts "SCOURSES2: #{@scourses}"
       @plan_estudios.each do |c|
