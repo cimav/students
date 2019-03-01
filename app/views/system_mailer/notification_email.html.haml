@@ -79,16 +79,9 @@
 - elsif @hash[:view].to_i.eql? 26 ## para el solicitante
   %b= @hash[:full_name]
   %br
-  %br= "Se le informa que su solicitud como servicio CIMAV ha sido de alta correctamente, es necesario enviar los siguientes documentos escaneados al siguiete correo: #{@hash[:reply_to]}"
-  %ul
-    %li= "Constancia de inscripción, expedida por el área de servicios escolares de la institución de procedencia, en el que se indique el promedio general del estudiante"
-    %li= "Contar con la recomendación de un miembro del personal académico de su institución de procedencia"
-    %li= "Carta de exposición de motivos, firmada por el aspirante"
-    %li= "Constancia de contar con algún tipo de servicio médico, vigente"
-    %li= "Identificación oficial con fotografía"
-  %br="No serán válidas las solicitudes que se reciban en otros correos, que no cuenten con todos los requisitos o que se envíen fuera de la fecha de recepción de solicitudes."
+  %br= "Se le informa que su solicitud como servicio CIMAV ha sido de alta correctamente, la publicación de resultados se dara a conocer el 18 de abril en el sitio cimav.edu.mx, cualquier duda o aclaración al respecto por favor con Marcos López <marcos.lopez@cimav.edu.mx>"
 - elsif @hash[:view].to_i.eql? 27 ## para el contacto con posgrado
-  = "#{@hash[:full_name]} <#{@hash[:email]}> ha hecho una solicitud como servicio CIMAV"
+  = "#{@hash[:full_name]} <#{@hash[:email]}> ha hecho una solicitud como Verano CIMAV"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
 
