@@ -82,6 +82,8 @@
   %br= "Se le informa que su solicitud como servicio CIMAV ha sido de alta correctamente, la publicación de resultados se dara a conocer el 18 de abril en el sitio cimav.edu.mx, cualquier duda o aclaración al respecto por favor con Marcos López <marcos.lopez@cimav.edu.mx>"
 - elsif @hash[:view].to_i.eql? 27 ## para el contacto con posgrado
   = "#{@hash[:full_name]} <#{@hash[:email]}> ha hecho una solicitud como Verano CIMAV"
+- elsif @hash[:view].to_i.eql? 28 ## para el contacto con posgrado
+  = "#{@hash[:full_name]} <#{@hash[:email]}> se ha dado de alta en un grupo académico"
 - else
   =  "El alumno #{@hash[:full_name]} <#{@hash[:email]}> ha subido un avance la plataforma usted puede revisar el avance entrando a http://academicos.cimav.edu.mx/alumnos"
 
