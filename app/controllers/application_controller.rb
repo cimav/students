@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-
-  $CICLO  = "2018-2"   #ciclo escolar anterior
-  $NCICLO = "2019-1"  #nuevo ciclo
+  $CICLO  = "2019-1"   #ciclo escolar anterior
+  $NCICLO = "2019-2"  #nuevo ciclo
+  $TEACHER_EVALUATION_TYPE = 1 ## 1 intermedia, 99 final
 
   def not_found
     raise ActionController::RoutingError.new('Not Found')
@@ -49,7 +49,7 @@ class ApplicationController < ActionController::Base
     joins0    = "INNER JOIN term_students ON term_students.id=term_course_students.term_student_id"
     joins1    = "INNER JOIN courses ON courses.id= term_courses.course_id"
     joins2    = "INNER JOIN terms ON terms.id= term_courses.term_id"
-    joins3    = "LEFT JOIN student_teacher_evaluations ON student_teacher_evaluations.staff_id=term_course_schedules.staff_id AND student_teacher_evaluations.term_course_id= term_course_schedules.term_course_id AND student_teacher_evaluations.student_id=term_students.student_id"
+    joins3    = "LEFT JOIN student_teacher_evaluations ON student_teacher_evaluations.staff_id=term_course_schedules.staff_id AND student_teacher_evaluations.term_course_id= term_course_schedules.term_course_id AND student_teacher_evaluations.student_id=term_students.student_id AND student_teacher_evaluations.teacher_evaluation_type=#{$TEACHER_EVALUATION_TYPE}"
     ## juntamos todos los joins con un gsub para no andarnos preocupando por los espacios antes o despues
     j         = joins0.gsub(/^/," ")+joins1.gsub(/^/," ")+joins2.gsub(/^/," ")+joins3.gsub(/^/," ")
     where0    = "term_students.student_id=?"

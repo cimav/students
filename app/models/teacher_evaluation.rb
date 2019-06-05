@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 class TeacherEvaluation < ActiveRecord::Base
-  attr_accessible :id,:staff_id,:term_course_id,:question1,:question2,:question3,:question4,:question5,:question6,:question7,:question8,:question9,:question10,:question11,:question12,:created_at,:updated_at,:notes
+  attr_accessible :id,:staff_id,:term_course_id,:question1,:question2,:question3,:question4,:question5,:question6,:question7,:question8,:question9,:question10,:question11,:question12,:created_at,:updated_at,:notes,:teacher_evaluation_type
 
   belongs_to :staff
   belongs_to :term_course
@@ -29,6 +30,14 @@ class TeacherEvaluation < ActiveRecord::Base
       SOMETIMES => "A veces",
       RARELY => "Casi nunca",
       NEVER => "Nunca"}
+  
+  INTERMEDIATE = 1
+  FINAL        = 99
+
+  TEACHER_EVALUATION_TYPE = {
+    INTERMEDIATE => "Intermedio",
+    FINAL => "Final"
+  }
 
   def get_answer(answer)
     ANSWERS[answer]

@@ -2,11 +2,11 @@
   - if @this_tcs.size.eql? 0
     = "No hay registros"
   - else 
-    - if StudentTeacherEvaluation.where(:term_course_id=>@this_tcs[0].term_course_id,:staff_id=>@this_tcs[0].staff_id,:student_id=>current_user.id).size > 0
+    - if StudentTeacherEvaluation.where(:term_course_id=>@this_tcs[0].term_course_id,:staff_id=>@this_tcs[0].staff_id,:student_id=>current_user.id,:teacher_evaluation_type=>$TEACHER_EVALUATION_TYPE).size > 0
       = "Esta evaluación ya fue contestada"
     - else
       - s = Staff.find(@this_tcs[0].staff_id)
-      %h2 Evaluaciones
+      %h2= "Evaluaciones [#{TeacherEvaluation::TEACHER_EVALUATION_TYPE[$TEACHER_EVALUATION_TYPE]}]"
       %h3= "#{@this_tcs[0].term_course.course.name}"
       %h3= "#{s.full_name}"
       
@@ -14,6 +14,7 @@
       = form_for(t_eval,:url=>{:action=>:create}, :html => { :'data-type' => 'html', :id => 'new_teacher_evaluation' }) do |f|
         = f.hidden_field :staff_id, {:value=>@this_tcs[0].staff_id}
         = f.hidden_field :term_course_id, {:value=>@this_tcs[0].term_course.id}
+        = f.hidden_field :teacher_evaluation_type, {:value=>$TEACHER_EVALUATION_TYPE}
         = hidden_field_tag :tcs_id, @this_tcs[0].id
         %table.table.table-bordered
           %thead

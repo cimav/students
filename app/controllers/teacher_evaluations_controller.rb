@@ -1,4 +1,3 @@
-
 class TeacherEvaluationsController < ApplicationController
   before_filter :auth_required
   before_filter :only => [:index] do |c| c.news 2 end
@@ -25,6 +24,7 @@ class TeacherEvaluationsController < ApplicationController
       ste.staff_id= @teacher_evaluation.staff_id
       ste.term_course_id = @teacher_evaluation.term_course_id
       ste.student_id = current_user.id
+      ste.teacher_evaluation_type = @teacher_evaluation.teacher_evaluation_type
       ste.save
       redirect_to :action=>:index
     end
