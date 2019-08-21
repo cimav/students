@@ -301,9 +301,11 @@ class StudentsController < ApplicationController
         opc_counter = 0
         puts "OPTATIVAS CURSADAS:"
         @optativas_cursadas_map.each do |oc|
-          puts "#{oc[2]}"
-          @scourses << @temas_selectos[opc_counter].id
-          opc_counter = opc_counter + 1
+          puts "### #{oc[2]}"
+          if @temas_selectos.size-1 < opc_counter
+            @scourses << @temas_selectos[opc_counter].id
+            opc_counter = opc_counter + 1
+          end
         end# @optativas_cursadas_map
       end ## if
 
