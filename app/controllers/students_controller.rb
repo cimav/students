@@ -337,6 +337,8 @@ class StudentsController < ApplicationController
              else
                @materias_faltantes << c
              end
+           elsif (c.name.include? 'Temas Selectos') ## ignoramos temas selectos para el plan 15
+             logger.debug "TEMA SELECTO: #{c.id} #{c.name}"
            else
              @materias_faltantes << c
            end
