@@ -302,10 +302,10 @@ class StudentsController < ApplicationController
         puts "OPTATIVAS CURSADAS:"
         @optativas_cursadas_map.each do |oc|
           puts "### #{oc[2]}"
-          if @temas_selectos.size-1 < opc_counter
+#          if @temas_selectos.size-1 < opc_counter
             @scourses << @temas_selectos[opc_counter].id
             opc_counter = opc_counter + 1
-          end
+#          end
         end# @optativas_cursadas_map
       end ## if
 
@@ -337,8 +337,8 @@ class StudentsController < ApplicationController
              else
                @materias_faltantes << c
              end
-           elsif (c.name.include? 'Temas Selectos') ## ignoramos temas selectos para el plan 15
-             logger.debug "TEMA SELECTO: #{c.id} #{c.name}"
+           #elsif (c.name.include? 'Temas Selectos') ## ignoramos temas selectos para el plan 15
+           #  logger.debug "TEMA SELECTO: #{c.id} #{c.name}"
            else
              @materias_faltantes << c
            end
