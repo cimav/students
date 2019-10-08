@@ -614,7 +614,27 @@ class StudentsController < ApplicationController
     json[:errors]= @errors
     render :json => json
   end
-
+  
+  def upload_file_register
+    json = {}
+  
+    f = params[:enrollment_file]['file']
+    @enrollment_file = EnrollmentFile.new
+    @enrollment_file.student_id = params[:student_id]
+    @enrollment_file.term_id    = params[:term_id]
+    @enrollment_file.enrollment_type_id = params[:enrollment_type_id]
+    @enrollment_file.file = f
+    @enrollment_file.description = f.original_filename
+   
+   
+    if @enrollment_file.save
+      render :inline => "<status>1</status><reference>upload</reference><id>#{@enrollment_file.id}</id><name>#{@enrollment_file.description}</name>"
+    else
+      render :inline => "<status>0</status><reference>upload</reference><errors>#{@enrollment_file.errors.full_messages}</errors>"
+    end 
+  end
+ 
+ 
   def get_protocol
     advance   = Advance.find(params[:id])
     staff_id  = params[:staff_id]

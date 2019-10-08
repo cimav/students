@@ -19,10 +19,14 @@ Students::Application.routes.draw do
   match '/avances/subir_archivo' => 'student_advances_file#upload_file'
   match '/avances/:id/file' => 'student_advances_file#file'
   
-  match '/inscripciones/cimav' => 'students#enrollment'
-  match '/inscripcion/cimav' => 'students#enrollment'
-  match '/inscripcion/alumno/:tcs_id' => 'students#endrollment'
-  match '/inscripcion/folio/:folio' => 'students#check_folio'
+  match '/inscripciones/cimav'              => 'students#enrollment'
+  match '/inscripcion/cimav'                => 'students#enrollment'
+  match '/inscripcion/alumno/:tcs_id'       => 'students#endrollment'
+  match '/inscripcion/folio/:folio'         => 'students#check_folio'
+  match '/inscripcion/upload_file_register' => 'students#upload_file_register'
+  match '/inscripcion/file/:id'             => 'enrollment_files#download'
+  match '/inscripcion/destroy_file/:id'     => 'enrollment_files#applicant_destroy'
+
  
   match '/servicios' => 'home#services'
 

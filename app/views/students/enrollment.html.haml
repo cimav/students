@@ -1,3 +1,86 @@
+:css
+  body{
+    padding-top: 20px;
+  }
+
+  .btn-primary{
+    background-color: #336699
+  }
+
+
+  .error-message{
+    color: red;
+  }
+  
+  .inputfile{
+    width: 0.1px;
+    height:0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+  
+  .inputfile + label{
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background-color: #336699;
+    display: inline-block;
+    transition: all .5s;
+    cursor: pointer;
+    padding: 8px 25px !important;
+    //width: fit-content;
+    border-radius: 8px;
+    text-align: center;
+  }  
+  
+  .inputfile:focus + label,
+  .inputfile + label:hover {
+    background-color: #003366;
+  }
+  
+  .tooltiptext{
+    font-size: 12px;
+    visibility: hidden;
+    background-color: #d8e5f3;
+    color: black;
+    text-align:center;
+    border-radius: 6px;   
+    padding: 8px 25px !important;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .reqdoc_button, .reqdoc_button_download, .reqdoc_button_delete{
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background-color: #336699;
+    display: inline-block;
+    transition: all .5s;
+    cursor: pointer;
+    padding: 8px 25px !important;
+    //width: fit-content;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .instructions{
+    background-color: #cce5ff;
+    color: #004085;
+    font-size: 14px;
+    border: 1px solid;
+    border-radius: 0.25rem;
+    border-color: #b8daff
+    padding: 12px;
+  }
+  
+  .inner-instructions{
+    padding: 12px 20px;
+    text-align: justify;
+  }
+  
 .inicio{:style=>'width:700px;height:180px;margin: 0 auto;'}
   - if @student.size>0
     - @true_tcs = @tcs.where(:status=>6) rescue []
@@ -51,14 +134,23 @@
         - @disable = false
         - @display = "none"
         - @display_refuse = "none"
-      = "Inscripcion para el ciclo #{$NCICLO}"
-      %br
+        
+      %h3= "Inscripcion para el ciclo #{$NCICLO}"
       %b= "Alumno:"
       = @student[0].full_name
       %br
       %b= "Programa:"
       = @student[0].program.name
       %br
+      %br
+      
+      .instructions
+        .inner-instructions
+          %b="Instrucciones: "
+          = "introduzca su folio de pago de 20 dígitos y cargue su CVU, cuando ambos campos se encuentren en verde se activará el botón de continuar para que se abra la selección de materias."
+        
+      %br  
+
       %b= "Ingrese su folio de pago (Folio electronico)"
       - folius = @tsp[0].folio rescue ""
       - if folius.eql? ""
@@ -66,12 +158,84 @@
       - else
         = text_field_tag :folio_field , folius, :disabled=> true
       = hidden_field_tag :hidden_id , @student[0].id
+      = image_tag "fail_30px.png", :id=> "img_fail_folio" ,:align=> 'center', :alt=>"FAIL!"
+      = image_tag "ok_30px.png", :id=> "img_ok_folio" , :align=> 'center', :style=>'display: none',:class=>"img-ok",:alt=>"OK!"
+      %br
+      %br
+      
+      %b= "Por favor suba su CVU (Curriculum Vitae Único de CONACYT)"
+      
+      
+      - my_id = 1
+      
+      - where = "name like \'%#{$NCICLO}%\' AND name like \'%#{@student[0].campus.short_name}%\'"
+      - term  = Term.where(:program_id=>@student[0].program_id).where(where)
 
+      - e_files = EnrollmentFile.where(:student_id=>@student[0].id,:term_id=>term[0].id,:enrollment_type_id=>1)
+
+      %br
+      - if e_files.size > 0
+        - @register = false
+        %b#file_message= "El archivo se encuentra en el servidor!!"
+        %span{:id=>"file_description"}= "[#{e_files[0].description}]"
+      - else
+        - @register = true
+        %b#file_message= "No se ha subido el archivo"
+        %span{:id=>"file_description"}
+
+      %br
+      
+      = form_for(EnrollmentFile.new, :url => {:action => "upload_file_register"}, :html => {:id => "reqdoc-form-1", :multipart=> true,:target=>'files_iframe2'}) do |f|
+        = hidden_field_tag "student_id", @student[0].id
+        = hidden_field_tag "term_id", term[0].id
+        = hidden_field_tag "enrollment_type_id", 1 #cvu
+        
+        -# style = "display: inline-block;"
+        - style = nil
+        - if @register
+          - style = "display: none;"
+          
+        = f.file_field :file,:id=>"internship_file_file_#{my_id}",:class=>"inputfile"
+        = label_tag "internship_file_file_#{my_id}", "Seleccionar archivo",:id=>"internship_file_file_label_#{my_id}"
+        .tooltiptext{:id=>"tooltip_#{my_id}"}= "Seleccionar archivo"
+        = button_tag "Subir Archivo", :type=>'button', :class=>'reqdoc_button', :my_id=>"#{my_id}", :id=>"reqdoc_button_#{my_id}"
+          
+        - if !@register
+          = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}",:my_file_id=> e_files[0].id
+          = button_tag "Borrar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}",:my_file_id=> e_files[0].id
+        - else
+          = button_tag "Descargar Archivo", :type=>'button', :class=>'reqdoc_button_download', :my_id=>"#{my_id}", :id=>"reqdoc_button_download_#{my_id}", :style=>"display: none;"
+          = button_tag "Borrar Archivo", :type=>'button', :class=>'reqdoc_button_delete', :my_id=>"#{my_id}", :id=>"reqdoc_button_delete_#{my_id}", :style=>"display: none;"
+
+        = image_tag "fail_30px.png", :id=> "img_fail_#{my_id}" ,:align=> 'center', :alt=>"FAIL!"
+        = image_tag "/images/ajax-load2.gif", :id=> "img_load_#{my_id}" , :align=> 'center',:style=>'display: none;'
+        = image_tag "ok_30px.png", :id=> "img_ok_#{my_id}" , :align=> 'center', :style=>'display: none',:class=>"img-ok", :alt=>"OK!"  
+        
+        - if !@register
+          :javascript
+            $(document).ready(function() {
+          
+              $('#img_fail_1').hide();
+              $('#img_ok_1').show();
+              $('#img_load_1').hide();
+              $('#internship_file_file_label_1').hide();
+              $('#tooltip_1').hide();
+              $('#reqdoc_button_1').hide()
+            });
+        - else
+          :javascript
+            $(document).ready(function() {
+          
+              $('#img_fail_1').show();
+              $('#img_ok_1').hide();
+              $('#img_load_1').hide();
+            });
       #button-div
         #button
-          - if !@disable
-            %button.btn.btn-primary.btn-sm{:id=>'btn_ok',:disable=>@disable}="Aceptar"
-          = image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
+          %button.reqdoc_button{:id=>'btn_ok',:disable=>@disable,:style=>'display: none'}="Continuar"
+          -# if !@disable
+            %button.btn.btn-primary.btn-sm{:id=>'btn_ok',:disable=>@disable}="Continuar"
+          =# image_tag "ajax-load2.gif", :id=> "ajax_load" , :width=> '20px', :style=>'display: none'
           %br
 
       #clock-div{:style=>"display: #{@display}"}
@@ -136,3 +300,10 @@
     = submit_tag "Enviar materias", :id=>"nedSendButton",:align=>:center,:disabled=>:disabled
     = button_tag "Cerrar", :disable_with => "Enviando..." , :id=>"nedCloseButton", :class=>"message-button"
 #help-dialog
+
+%iframe{"name" => "files_iframe2", "id" => "files_iframe2" ,:style=> "display: none;"}
+  
+:javascript
+  $(window).load(function(){
+    files_req_missing();
+  });
