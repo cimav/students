@@ -12,4 +12,11 @@ class SystemMailer < ActionMailer::Base
      mail(:to=> @to,:subject=>object.subject,:reply_to=>@reply_to)
    end
  end 
+
+ def failed_subject(object)
+   @tcs = TermCourseStudent.find(object.content.to_i)
+   @to  = object.to
+
+   mail(:to=> @to,:subject=>object.subject)
+ end
 end

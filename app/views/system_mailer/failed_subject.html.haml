@@ -1,0 +1,8 @@
+= "El alumno "
+%b= @tcs.term_student.student.full_name rescue 'N.D.'
+= " ha recibido una calificación reprobatoria ("
+%b= @tcs.grade rescue 'N.D.'
+= ") en la materia " 
+%b= @tcs.term_course.course.name rescue 'N.D.'
+= " perteneciente al ciclo escolar #{@tcs.term_course.term.name} impartida por "
+%b= @tcs.term_course.staff.full_name rescue 'N.D.'
